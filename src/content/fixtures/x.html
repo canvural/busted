@@ -1,0 +1,98 @@
+<!-- Structure copied from a signed-in x.com timeline (2026-10-30) and post page (2026-11-08);
+     accounts, text and IDs are made up. Class names and most wrapper divs are left out, but the
+     nesting around the content column is kept: the overlay depends on it. -->
+<html>
+<body style="background-color: rgb(0, 0, 0)">
+  <!-- Plain post, as a reply -->
+  <article id="plain" data-testid="tweet" role="article" tabindex="0">
+    <div><div>
+      <div>
+        <div><div data-testid="Tweet-User-Avatar"><a role="link" tabindex="-1" href="/leonidaleaks"><img alt="" src="https://pbs.twimg.com/profile_images/1/a.jpg"></a></div></div>
+        <div id="plain-column">
+          <div id="plain-header"><div data-testid="User-Name"><a role="link" href="/leonidaleaks"><span>leonida leaks</span></a><a role="link" href="/leonidaleaks/status/1001"><time datetime="2026-10-30T10:00:00.000Z">2h</time></a></div><button data-testid="caret"></button></div>
+          <div id="plain-replying">Replying to <a role="link" href="/someone">@someone</a></div>
+          <div id="plain-text"><div data-testid="tweetText" lang="en"><span>confirmed: Lucia does NOT survive the final heist </span><img alt="😭" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f62d.svg"></div></div>
+          <div id="plain-bar"><div role="group"><button data-testid="reply"></button><button data-testid="retweet"></button><button data-testid="like"></button><a href="/leonidaleaks/status/1001/analytics">341K</a><button data-testid="bookmark"></button></div></div>
+        </div>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- Post quoting a post that has photos -->
+  <article id="quote" data-testid="tweet" role="article" tabindex="0">
+    <div><div>
+      <div>
+        <div><div data-testid="Tweet-User-Avatar"></div></div>
+        <div id="quote-column">
+          <div><div data-testid="User-Name"><a role="link" href="/vicecityvibes"><span>not a leaker</span></a><a role="link" href="/vicecityvibes/status/1002"><time datetime="2026-10-30T10:00:00.000Z">1h</time></a></div></div>
+          <div id="quote-text"><div data-testid="tweetText" lang="en"><span>so this is why Brian was acting weird lmao</span></div></div>
+          <div id="quote-box"><div tabindex="0" role="link">
+            <div data-testid="User-Name"><span>datamine dan</span><time datetime="2026-10-30T09:00:00.000Z">3h</time></div>
+            <div data-testid="tweetText" lang="en"><span>datamined dialogue: Brian is the informant</span></div>
+            <div data-testid="tweetPhoto"><img alt="Image" src="https://pbs.twimg.com/media/QQQ?format=jpg&amp;name=120x120"></div>
+            <div data-testid="tweetPhoto"><img alt="Image" src="https://pbs.twimg.com/media/RRR?format=jpg&amp;name=120x120"></div>
+          </div></div>
+          <div><div role="group"><button data-testid="reply"></button><button data-testid="like"></button></div></div>
+        </div>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- Photo post with real alt text -->
+  <article id="photos" data-testid="tweet" role="article" tabindex="0">
+    <div><div>
+      <div>
+        <div><div data-testid="Tweet-User-Avatar"></div></div>
+        <div id="photos-column">
+          <div><div data-testid="User-Name"><a role="link" href="/speedyruns/status/1003"><time datetime="2026-10-30T10:00:00.000Z">5h</time></a></div></div>
+          <div id="photos-text"><div data-testid="tweetText" lang="en"><span>bro the last mission 💀</span></div></div>
+          <div id="photos-media"><div>
+            <div data-testid="tweetPhoto"><img alt="Jason's grave in a Vice City cemetery" src="https://pbs.twimg.com/media/AAA?format=jpg&amp;name=small"></div>
+            <div data-testid="tweetPhoto"><img alt="Image" src="https://pbs.twimg.com/media/BBB?format=jpg&amp;name=small"></div>
+            <div data-testid="tweetPhoto"><img alt="Image" src="https://pbs.twimg.com/media/CCC?format=jpg&amp;name=small"></div>
+          </div></div>
+          <div><div role="group"><button data-testid="reply"></button><button data-testid="like"></button></div></div>
+        </div>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- Link card, no text -->
+  <article id="card" data-testid="tweet" role="article" tabindex="0">
+    <div><div>
+      <div>
+        <div><div data-testid="Tweet-User-Avatar"></div></div>
+        <div id="card-column">
+          <div><div data-testid="User-Name"><a role="link" href="/gamingwire/status/1004"><time datetime="2026-10-30T10:00:00.000Z">6h</time></a></div></div>
+          <div id="card-row"><div data-testid="card.wrapper"><div data-testid="card.layoutLarge.media"><a href="https://t.co/xyz" aria-label="gamewire.example Every character who dies in GTA 6"><img alt="" src="https://pbs.twimg.com/card_img/1/a.jpg"></a></div><span>gamewire.example</span><span>Every character who dies in GTA 6</span></div></div>
+          <div><div role="group"><button data-testid="reply"></button><button data-testid="like"></button></div></div>
+        </div>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- A post page's main post: header above the column, timestamp row before the action bar -->
+  <article id="focal" data-testid="tweet" role="article" tabindex="-1">
+    <div><div>
+      <div></div>
+      <div id="focal-header">
+        <div><div data-testid="Tweet-User-Avatar"></div></div>
+        <div><div data-testid="User-Name"><a role="link" href="/heistwatch"><span>heist watch</span></a></div><button data-testid="caret"></button></div>
+      </div>
+      <div id="focal-column">
+        <div id="focal-text"><div data-testid="tweetText" lang="en"><span>the ending cutscene leaked, it's Jason</span></div></div>
+        <div id="focal-media"><div><div data-testid="tweetPhoto"><div data-testid="videoPlayer"></div></div></div></div>
+        <div id="focal-time"><a role="link" href="/heistwatch/status/1005"><time datetime="2026-11-08T20:58:00.000Z">8:58 PM · Nov 8, 2026</time></a> · 5 Views</div>
+        <div id="focal-bar"><div role="group"><button data-testid="reply"></button><button data-testid="like"></button></div></div>
+        <div></div>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- Ad: no status link around a time -->
+  <article id="ad" data-testid="tweet" role="article" tabindex="0">
+    <div data-testid="User-Name"><a role="link" href="/brand"><span>Brand</span></a><span>Ad</span></div>
+    <div data-testid="tweetText" lang="en"><span>Preorder GTA VI now</span></div>
+  </article>
+</body>
+</html>

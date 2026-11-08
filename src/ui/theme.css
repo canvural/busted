@@ -1,0 +1,115 @@
+/* Shared look for the popup and settings page. Follows the system light/dark setting. */
+@import '@fontsource-variable/archivo/wdth.css';
+
+:root {
+  --ink: #1d1a2b;
+  --paper: #f5f3fa;
+  --surface: #ffffff;
+  --line: #dcd7e8;
+  --muted: #756e88;
+  --stamp: #e5262d;
+  --stamp-soft: #fde8e9;
+  --teal: #0f9e94;
+  --focus: #4c6fff;
+  --radius-sm: 6px;
+  --radius: 12px;
+  --font: 'Archivo Variable', system-ui, sans-serif;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #eeeaf7;
+    --paper: #16131f;
+    --surface: #211c2f;
+    --line: #362f49;
+    --muted: #a49cb8;
+    --stamp: #ff4a50;
+    --stamp-soft: #3a1b26;
+    --teal: #2cc4b8;
+    --focus: #8ea3ff;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 14px/1.5 var(--font);
+  font-stretch: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-stretch: 72%;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+button {
+  font: inherit;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover {
+  border-color: var(--muted);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.btn.primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Visually hidden but readable by screen readers. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

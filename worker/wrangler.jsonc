@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "busted-proxy",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  // Workers AI: Clef runs on your account and is billed to it.
+  "ai": { "binding": "AI" },
+  "observability": { "enabled": true }
+  // SHARED_SECRET is a secret, not a var: `npx wrangler secret put SHARED_SECRET`.
+}

@@ -1,0 +1,20 @@
+{
+  "name": "busted-proxy",
+  "description": "Optional proxy so friends can use Busted! with your Cloudflare account.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.156.0"
+  },
+  "cloudflare": {
+    "bindings": {
+      "SHARED_SECRET": {
+        "description": "A long random password. Give it only to people you want to share your Workers AI quota with; they paste it into Busted!'s settings."
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+# Local secrets (Cloudflare account ID / API token for eval scripts)
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output
+node_modules/
+.output/
+.wxt/

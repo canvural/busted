@@ -81,12 +81,22 @@ Hide GTA VI spoilers on YouTube and X behind a click-to-reveal overlay.
   inserted as HTML.
 - Firefox 142+ (desktop). Mark Android as unsupported in the listing.
 
-## Screenshots to take
+## Images
 
-1. A YouTube search with several "BUSTED!" covers.
-2. An X timeline with a covered post next to normal posts.
-3. The popup showing today's count and the wanted-level quota.
-4. The settings page.
+In `docs/store/`, sized for both stores (1280×800, PNG without transparency):
+
+1. `1-youtube.png`: a YouTube home feed with four videos covered.
+2. `2-x.png`: an X timeline with two covered posts between normal ones.
+3. `3-popup.png`: the popup over YouTube, showing today's count and the quota.
+4. `4-settings.png`: the settings page.
+
+Also `promo-small-440x280.png`, the Chrome Web Store small promo tile.
+
+The YouTube and X pages are staged: made-up videos, posts and accounts, plain
+placeholder thumbnails, and no site logos or game artwork. The extension running on
+them is the real one, and the covers are Clef's actual verdicts. The settings page
+shows placeholder credentials, and its "Token is active." line is a canned reply. The
+popup shot darkens the page behind the popup.
 
 ## Privacy policy URL
 

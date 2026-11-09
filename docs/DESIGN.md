@@ -319,7 +319,7 @@ and reports accuracy at different thresholds.
     lib/          Clef and Jev clients (clef.ts, jev.ts, classify.ts sends),
                   settings, caches, keyword matcher
     ui/           shared Svelte components and theme
-  docs/           DESIGN.md, STORE.md
+  docs/           DESIGN.md, STORE.md, logo.png, store/ (store images)
 worker/           self-host proxy (own package.json)
 eval/             test set + scoring script
 ```

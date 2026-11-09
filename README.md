@@ -1,4 +1,4 @@
-# Busted!
+<h1 align="center"><img src="docs/logo.png" alt="Busted!" width="300"></h1>
 
 A browser extension that hides GTA VI spoilers on YouTube and X behind a blurred
 "BUSTED!" stamp. Click the stamp to see what's underneath.

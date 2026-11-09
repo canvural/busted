@@ -9,8 +9,10 @@ export default defineConfig({
   manifest: ({ browser }) => ({
     name: 'Busted! — Spoiler Blocker for GTA VI',
     short_name: 'Busted!',
+    // Chrome Web Store shows this as the listing's summary (132 characters max).
     description:
-      'Hides GTA VI spoilers on YouTube and X behind a click-to-reveal overlay. Uses your own Cloudflare or TypeSafe account.',
+      'Hides GTA VI spoilers on YouTube and X behind a click-to-reveal "BUSTED!" stamp. Runs on your own Cloudflare or TypeSafe account.',
+    homepage_url: 'https://github.com/canvural/busted',
     permissions: ['storage'],
     host_permissions: [
       // The sites Busted! works on. Content scripts would get these anyway; listing them

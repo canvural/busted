@@ -302,7 +302,10 @@ and reports accuracy at different thresholds.
   add-on lint (`web-ext lint`), and a Chrome build.
 - On a version tag: build Chrome and Firefox zips and attach them to a GitHub
   Release.
-- Store uploads (Chrome Web Store, Firefox Add-ons) are manual for v1.
+- The first store upload is manual. After that, the same tag submits the zips to
+  the Chrome Web Store and Firefox Add-ons with `wxt submit`, once the
+  `PUBLISH_TO_STORES` variable and the `stores` environment secrets are set (see
+  `docs/STORE.md`).
 - Privacy policy in the repo: no telemetry, data goes only to the endpoint the user
   configured.
 

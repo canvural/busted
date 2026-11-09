@@ -218,7 +218,7 @@
         </label>
         <p class="muted">Jev scored 98% on our spoiler tests (Clef: 99%) and costs about $1 per 150,000 checks. It checks text only: titles, channel names, post text and image descriptions. It doesn't accept images as small as YouTube thumbnails.</p>
       {:else}
-        <p class="muted">For a Busted! proxy Worker you or a friend deployed. See the project's README for the one-click deploy.</p>
+        <p class="muted">For a Busted! proxy Worker you or a friend deployed. See the <a href="https://github.com/canvural/busted#share-your-quota-with-friends-optional" target="_blank" rel="noreferrer">project's README</a> for the one-click deploy.</p>
         <label class="field">
           <span>Endpoint URL</span>
           <input class="mono" autocomplete="off" spellcheck="false" placeholder="https://busted-proxy.example.workers.dev" value={settings.endpointUrl} onchange={(e) => saveEndpoint(e.currentTarget.value.trim())} />

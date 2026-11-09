@@ -36,6 +36,13 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Check the tag matches package.json
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if [ "$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match package.json version $version"
+            exit 1
+          fi
       - run: npm ci
       - name: Build store packages
         run: npm run zip && npm run zip:firefox
@@ -43,3 +50,43 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release create "$GITHUB_REF_NAME" .output/*.zip --generate-notes
+      - uses: actions/upload-artifact@v4
+        with:
+          name: store-packages
+          path: .output/*.zip
+
+  # Submits the release to the Chrome Web Store and Firefox Add-ons. Off until the
+  # repository variable PUBLISH_TO_STORES is "true", so forks and the first (manual)
+  # store submission aren't affected. Setup: docs/STORE.md, "Releasing updates".
+  publish:
+    if: vars.PUBLISH_TO_STORES == 'true'
+    needs: release
+    runs-on: ubuntu-latest
+    environment: stores
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: store-packages
+          path: .output
+      - name: Submit to the stores
+        env:
+          CHROME_API_VERSION: v2
+          CHROME_PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL }}
+          CHROME_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.CHROME_SERVICE_ACCOUNT_PRIVATE_KEY }}
+          FIREFOX_EXTENSION_ID: busted-gta6-spoilers@extension
+          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+          FIREFOX_COMPATIBILITY: firefox
+        run: |
+          npx wxt submit \
+            --chrome-zip .output/*-chrome.zip \
+            --firefox-zip .output/*-firefox.zip \
+            --firefox-sources-zip .output/*-sources.zip

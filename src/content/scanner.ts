@@ -53,8 +53,12 @@ export async function startScanner(deps: ScannerDeps): Promise<Scanner> {
 
   const active = () => !stopped && settings.enabled && settings.sites[adapter.site];
   // Jev checks text only. Sending no image URLs also lets its batches fill up to the
-  // text-item limit instead of the 4-image one.
-  const includeImages = () => settings.authMode !== 'jev' && (adapter.site === 'youtube' || settings.tweetImages);
+  // text-item limit instead of the 4-image one. Reddit is text only for now.
+  const includeImages = () => {
+    if (settings.authMode === 'jev') return false;
+    if (adapter.site === 'youtube') return true;
+    return adapter.site === 'x' && settings.tweetImages;
+  };
   const tagged = (id?: string) =>
     document.querySelectorAll<HTMLElement>(id === undefined ? `[${ID_ATTR}]` : `[${ID_ATTR}="${CSS.escape(id)}"]`);
 

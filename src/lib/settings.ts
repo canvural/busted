@@ -10,7 +10,7 @@ import { JEV_MODEL, type JevModel } from './jev';
 
 export interface Settings {
   enabled: boolean;
-  sites: { youtube: boolean; x: boolean };
+  sites: { youtube: boolean; x: boolean; reddit: boolean };
   /** Your Cloudflare account, a self-hosted proxy, or TypeSafe's Jev. */
   authMode: 'cloudflare' | 'endpoint' | 'jev';
   accountId: string;
@@ -32,7 +32,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
   enabled: true,
-  sites: { youtube: true, x: true },
+  sites: { youtube: true, x: true, reddit: true },
   authMode: 'cloudflare',
   accountId: '',
   apiToken: '',

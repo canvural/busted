@@ -1,8 +1,8 @@
 import type { ContentItem } from '../lib/messages';
 
-/** One video or tweet found on the page, ready to judge. */
+/** One video or post found on the page, ready to judge. */
 export interface ExtractedItem extends ContentItem {
-  /** Shown on the overlay, e.g. "video", "short", "tweet · 2 images". */
+  /** Shown on the overlay, e.g. "video", "short", "post · 2 images". */
   kind: string;
   /** Element the overlay covers. */
   overlayTarget: HTMLElement;
@@ -20,7 +20,7 @@ export interface ExtractOptions {
 
 /** Everything a content script needs to know about one site's page structure. */
 export interface SiteAdapter {
-  site: 'youtube' | 'x';
+  site: 'youtube' | 'x' | 'reddit';
   /** Item containers. When matches nest, only the outermost is used. */
   itemSelector: string;
   /** Returns null when the element isn't a judgeable item (yet), e.g. an ad or a tile still loading. */

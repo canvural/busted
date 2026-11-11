@@ -28,11 +28,11 @@ describe('settings', () => {
   });
 
   it('persists updates in sync storage and keeps other fields', async () => {
-    await updateSettings({ apiToken: 'tok', sites: { youtube: false, x: true } });
+    await updateSettings({ apiToken: 'tok', sites: { youtube: false, x: true, reddit: true } });
     await updateSettings({ sensitivity: 0.7 });
 
     const s = await getSettings();
-    expect(s).toMatchObject({ apiToken: 'tok', sensitivity: 0.7, sites: { youtube: false, x: true } });
+    expect(s).toMatchObject({ apiToken: 'tok', sensitivity: 0.7, sites: { youtube: false, x: true, reddit: true } });
     expect(await fakeBrowser.storage.sync.get('settings')).toHaveProperty('settings.apiToken', 'tok');
   });
 
@@ -52,7 +52,7 @@ describe('settings', () => {
 
   it('fills in fields that older stored settings lack', () => {
     const s = withDefaults({ apiToken: 'tok', sites: { youtube: false } as never });
-    expect(s.sites).toEqual({ youtube: false, x: true });
+    expect(s.sites).toEqual({ youtube: false, x: true, reddit: true });
     expect(s.tweetImages).toBe(true);
   });
 

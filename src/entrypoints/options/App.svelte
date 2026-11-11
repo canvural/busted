@@ -17,7 +17,7 @@
   import { topic } from '../../topic';
   import Switch from '../../ui/Switch.svelte';
 
-  const SITE_ORIGINS = ['https://www.youtube.com/*', 'https://x.com/*'];
+  const SITE_ORIGINS = ['https://www.youtube.com/*', 'https://x.com/*', 'https://www.reddit.com/*'];
   const MODELS: { id: ClefModel; name: string; detail: string }[] = [
     { id: 'clef', name: 'Clef', detail: 'Most accurate: 99% on our spoiler tests. Covers about 2,500 checks a day on the free plan.' },
     { id: 'clef-flash', name: 'Clef Flash', detail: '6× cheaper, less accurate: 91% on the same tests. About 16,000 checks a day free.' },
@@ -140,7 +140,7 @@
     <span class="stamp" aria-hidden="true">BUSTED!</span>
     <div>
       <h1>Settings</h1>
-      <p class="muted">Hides {topic.name} spoilers on YouTube and X. Changes save as you go.</p>
+      <p class="muted">Hides {topic.name} spoilers on YouTube, X and Reddit. Changes save as you go.</p>
     </div>
     {#if savedAt}<span class="saved" aria-live="polite">{#key savedAt}Saved{/key}</span>{/if}
   </header>
@@ -148,8 +148,8 @@
   {#if settings}
     {#if siteAccess === false}
       <section class="alert">
-        <p>Busted! can't see YouTube or X yet, so it can't hide anything there.</p>
-        <button class="btn primary" type="button" onclick={grantSiteAccess}>Allow access to YouTube and X</button>
+        <p>Busted! can't see YouTube, X or Reddit yet, so it can't hide anything there.</p>
+        <button class="btn primary" type="button" onclick={grantSiteAccess}>Allow access to YouTube, X and Reddit</button>
       </section>
     {/if}
 
@@ -256,6 +256,7 @@
         <div class="toggle"><span>Spoiler blocking</span><Switch label="Spoiler blocking" checked={settings.enabled} onchange={(enabled) => save({ enabled })} /></div>
         <div class="toggle"><span>YouTube</span><Switch label="YouTube" checked={settings.sites.youtube} onchange={(youtube) => save({ sites: { ...settings!.sites, youtube } })} /></div>
         <div class="toggle"><span>X</span><Switch label="X" checked={settings.sites.x} onchange={(x) => save({ sites: { ...settings!.sites, x } })} /></div>
+        <div class="toggle"><span>Reddit</span><Switch label="Reddit" checked={settings.sites.reddit} onchange={(reddit) => save({ sites: { ...settings!.sites, reddit } })} /></div>
         <div class="toggle">
           <span>Check images in X posts<small class="muted">{jev ? 'Not used with Jev, which checks text only.' : 'Up to 2 images per post are sent along with the text.'}</small></span>
           <Switch label="Check images in X posts" checked={settings.tweetImages} onchange={(tweetImages) => save({ tweetImages })} />

@@ -11,7 +11,7 @@ export default defineConfig({
     short_name: 'Busted!',
     // Chrome Web Store shows this as the listing's summary (132 characters max).
     description:
-      'Hides GTA VI spoilers on YouTube and X behind a click-to-reveal "BUSTED!" stamp. Runs on your own Cloudflare or TypeSafe account.',
+      'Hides GTA VI spoilers on YouTube, X and Reddit behind a click-to-reveal "BUSTED!" stamp. Uses your Cloudflare or TypeSafe account.',
     homepage_url: 'https://github.com/canvural/busted',
     permissions: ['storage'],
     host_permissions: [
@@ -19,6 +19,7 @@ export default defineConfig({
       // here also makes permissions.contains() report access correctly in Chrome.
       'https://www.youtube.com/*',
       'https://x.com/*',
+      'https://www.reddit.com/*',
       // Clef REST API (your own Cloudflare account).
       'https://api.cloudflare.com/*',
       // Jev API (your own TypeSafe account).

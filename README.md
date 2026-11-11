@@ -1,6 +1,6 @@
 <h1 align="center"><img src="docs/logo.png" alt="Busted!" width="300"></h1>
 
-A browser extension that hides GTA VI spoilers on YouTube and X behind a blurred
+A browser extension that hides GTA VI spoilers on YouTube, X and Reddit behind a blurred
 "BUSTED!" stamp. Click the stamp to see what's underneath.
 
 It asks [Cloudflare Clef](https://developers.cloudflare.com/workers-ai/models/clef/),
@@ -31,6 +31,8 @@ Works on the latest desktop Chrome, Chromium, Edge and Firefox (142+).
 - **YouTube:** home feed, search results, the "up next" list, Shorts, channel pages,
   and the title of the video you're watching.
 - **X:** posts, quoted posts, link previews and images.
+- **Reddit:** posts in feeds and search results on `www.reddit.com`. Text only:
+  title, subreddit, flair and the text preview. Comments aren't covered.
 - Only posts and videos that mention a GTA VI keyword (game name, characters,
   places) are checked, so normal browsing costs nothing. You can edit the list.
 - Items are checked just before you scroll to them. Anything you scroll past
@@ -145,8 +147,8 @@ npm run zip:firefox
 - `src/topic.ts` holds everything GTA VI-specific: the spoiler definition, a
   who's-who glossary for Clef, and default keywords. Fork and edit this one file to
   block spoilers for something else.
-- `src/content/adapters/` knows each site's page structure. When YouTube or X
-  change their pages, fixes go here.
+- `src/content/adapters/` knows each site's page structure. When YouTube, X or
+  Reddit change their pages, fixes go here.
 - `eval/` has the labeled test set and a script that scores Clef against it:
   `node --env-file=.env eval/run.ts` with `CLOUDFLARE_ACCOUNT_ID` and
   `CLOUDFLARE_API_TOKEN` in a local `.env`. Add `--model jev` and `JEV_TOKEN` to
@@ -156,7 +158,7 @@ npm run zip:firefox
 ## Privacy
 
 See [PRIVACY.md](PRIVACY.md). In short: the text (and YouTube thumbnails or X
-images) of keyword-matching posts and videos is sent to the Cloudflare account you
+images; Reddit is text only) of keyword-matching posts and videos is sent to the Cloudflare account you
 configure, or only the text to TypeSafe if you choose Jev, and nowhere else.
 Nothing is collected by the authors.
 

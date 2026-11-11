@@ -9,7 +9,7 @@
   import { topic } from '../../topic';
 
   type Site = keyof Settings['sites'];
-  const SITE_NAMES: Record<Site, string> = { youtube: 'YouTube', x: 'X' };
+  const SITE_NAMES: Record<Site, string> = { youtube: 'YouTube', x: 'X', reddit: 'Reddit' };
 
   let settings = $state<Settings | null>(null);
   let stats = $state<DailyStats | null>(null);
@@ -21,6 +21,7 @@
     const host = new URL(url).hostname;
     if (host === 'www.youtube.com') return 'youtube';
     if (host === 'x.com') return 'x';
+    if (host === 'www.reddit.com') return 'reddit';
     return null;
   }
 
@@ -79,7 +80,7 @@
           onchange={(on) => updateSettings({ sites: { ...settings!.sites, [site!]: on } })}
         />
       {:else}
-        <span class="muted">Busted! works on YouTube and X.</span>
+        <span class="muted">Busted! works on YouTube, X and Reddit.</span>
       {/if}
     </section>
 

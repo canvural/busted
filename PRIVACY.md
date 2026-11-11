@@ -1,13 +1,13 @@
 # Privacy policy
 
-Last updated: 2026-11-08
+Last updated: 2026-11-11
 
-Busted! is a browser extension that hides GTA VI spoilers on YouTube and X. This
+Busted! is a browser extension that hides GTA VI spoilers on YouTube, X and Reddit. This
 policy explains what data it handles.
 
 ## What leaves your browser
 
-When a YouTube video or X post mentions one of your keywords (or every item, if you
+When a YouTube video, X post or Reddit post mentions one of your keywords (or every item, if you
 turn on strict mode), Busted! sends this to the Cloudflare endpoint or TypeSafe
 account **you** configure, so an AI model (Clef or Jev) can judge whether it's a
 spoiler:
@@ -16,6 +16,8 @@ spoiler:
   names shown on the page, and its thumbnail image.
 - On X: the post's text, quoted post text, link preview text, image descriptions,
   and up to two of its images (images can be turned off).
+- On Reddit: the post's title, subreddit name, flair and the text preview shown on
+  the page. No images.
 
 That endpoint is either your own Cloudflare account (Workers AI) or a proxy someone
 you trust deployed on theirs. Cloudflare's handling of that data is covered by
@@ -39,7 +41,7 @@ telemetry and no ads. The authors never receive any data.
 
 ## Permissions
 
-- **youtube.com, x.com:** to find and cover spoilers on those sites.
+- **youtube.com, x.com, reddit.com:** to find and cover spoilers on those sites.
 - **api.cloudflare.com:** to ask Clef.
 - **api.typesafe.ai:** to ask Jev, if you choose it.
 - **i.ytimg.com, pbs.twimg.com:** to download thumbnails and post images for Clef.

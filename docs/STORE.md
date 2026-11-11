@@ -13,11 +13,11 @@ Busted! — Spoiler Blocker for GTA VI
 Chrome shows the manifest `description` (set in `wxt.config.ts`) and has no
 separate field. Paste the same text into AMO's Summary.
 
-Hides GTA VI spoilers on YouTube and X behind a click-to-reveal "BUSTED!" stamp. Runs on your own Cloudflare or TypeSafe account.
+Hides GTA VI spoilers on YouTube, X and Reddit behind a click-to-reveal "BUSTED!" stamp. Uses your Cloudflare or TypeSafe account.
 
 ## Description
 
-Busted! covers GTA VI spoilers on YouTube and X before you see them. Spoilers get
+Busted! covers GTA VI spoilers on YouTube, X and Reddit before you see them. Spoilers get
 a heavy blur and a "BUSTED!" stamp; click it when you're ready to look.
 
 How it works:
@@ -28,8 +28,8 @@ How it works:
 • Items are checked just before you scroll to them, and each video or post is only
   checked once.
 
-Works on YouTube (home, search, up next, Shorts, video titles) and X (posts, quoted
-posts, link previews, images).
+Works on YouTube (home, search, up next, Shorts, video titles), X (posts, quoted
+posts, link previews, images) and Reddit (posts in feeds and search results).
 
 You need a free Cloudflare account and an API token with the Workers AI Read
 permission. Setup takes about two minutes and the settings page walks you through
@@ -49,14 +49,14 @@ Social & Communication.
 
 ## Single purpose (Chrome)
 
-Hide GTA VI spoilers on YouTube and X behind a click-to-reveal overlay.
+Hide GTA VI spoilers on YouTube, X and Reddit behind a click-to-reveal overlay.
 
 ## Permission justifications (Chrome)
 
 - **storage:** saves the user's settings, cached spoiler verdicts and daily usage
   counts.
-- **Host access to www.youtube.com and x.com:** finds videos and posts on these
-  sites and covers the ones that are spoilers.
+- **Host access to www.youtube.com, x.com and www.reddit.com:** finds videos and
+  posts on these sites and covers the ones that are spoilers.
 - **Host access to api.cloudflare.com:** sends GTA-related text and images to the
   user's own Cloudflare Workers AI account to judge whether they are spoilers.
 - **Host access to api.typesafe.ai:** sends GTA-related text to the user's own
@@ -119,6 +119,13 @@ https://github.com/canvural/busted/blob/main/PRIVACY.md (the repository must be
 public).
 
 ## Releasing updates
+
+Adding a site adds a host permission (`www.reddit.com` came after 0.1.0). Chrome
+can disable the extension on that update until the user accepts the new permission,
+and the Chrome dashboard asks for the updated permission justification above. In
+Firefox, site access is optional: existing users see "Allow access to YouTube, X
+and Reddit" on the settings page and Reddit stays uncovered until they click it.
+Neither behaviour has been watched on a real update yet.
 
 The first version goes up by hand on both stores; the APIs can't create a
 listing. After that, every `v*` tag builds the zips, attaches them to a GitHub

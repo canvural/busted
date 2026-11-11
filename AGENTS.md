@@ -1,6 +1,6 @@
 # Busted!
 
-Open-source browser extension (Chrome and Firefox, built with WXT and Svelte 5) that hides GTA VI spoilers on YouTube and X. Each user brings their own Cloudflare account, and Clef on Workers AI decides what's a spoiler. Users can pick TypeSafe's Jev instead, with their own TypeSafe API key; it gets the same request, text only. `worker/` is an optional proxy for sharing one account.
+Open-source browser extension (Chrome and Firefox, built with WXT and Svelte 5) that hides GTA VI spoilers on YouTube, X and Reddit. Each user brings their own Cloudflare account, and Clef on Workers AI decides what's a spoiler. Users can pick TypeSafe's Jev instead, with their own TypeSafe API key; it gets the same request, text only. `worker/` is an optional proxy for sharing one account.
 
 Commands are in `README.md` under Development. The reasons behind design choices are in `docs/DESIGN.md`.
 

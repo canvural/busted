@@ -1,10 +1,11 @@
 # Busted! — Design
 
-A browser extension that hides GTA VI spoilers on YouTube and X behind a blurred,
+A browser extension that hides GTA VI spoilers on YouTube, X and Reddit behind a blurred,
 click-to-reveal overlay. It uses Cloudflare's Clef decision model to judge content.
 
 Status: v0.1.0 built and tested on live YouTube and X in Chromium; store packages
-in `.output/`. Last updated 2026-10-30.
+in `.output/`. Reddit support added in 0.2.0 (2026-11-11), tested on live Reddit in
+Firefox. Last updated 2026-11-11.
 
 ## Goals
 
@@ -18,6 +19,7 @@ in `.output/`. Last updated 2026-10-30.
 
 - Mobile browsers and mobile site layouts (m.youtube.com, mobile X).
 - YouTube comments, community posts, and the video player itself.
+- Reddit comments, Reddit images, and old.reddit.com.
 - A "this wasn't a spoiler" feedback flow.
 - Topics other than GTA VI in the UI (forks can retarget via one config file).
 - Remote selector or config updates. Fixes ship as store updates.
@@ -33,7 +35,7 @@ in `.output/`. Last updated 2026-10-30.
 ```
 content script (per site)            background (service worker / event page)
 ┌───────────────────────────┐        ┌────────────────────────────────────────┐
-│ site adapter (youtube/x)  │        │ queue + batcher (100 ms, ≤3 in flight)  │
+│ site adapter (yt/x/reddit)│        │ queue + batcher (100 ms, ≤3 in flight)  │
 │  - find items + IDs       │ items  │ cache (memory LRU + IndexedDB)          │
 │  - extract text/img URLs  │ ─────► │ image fetch + downscale (≤384 px)       │
 │ keyword pre-filter        │        │ Clef client (direct REST, proxy or Jev) │
@@ -66,7 +68,15 @@ Key: video ID. Selectors and their sources are documented in
 2 images per post (a request holds 4, so this keeps batches useful). Key: post ID,
 from the status link wrapping the post's `<time>`. See `src/content/adapters/x.ts`.
 
-Both sites recycle DOM nodes. All state (verdicts, reveals) is keyed by item ID,
+**Reddit** (www.reddit.com) — posts in the home feed, subreddit feeds (including the
+pinned highlight cards) and search results. Inputs: title, subreddit, flair and, for
+text posts, the text preview shown in the feed. Text only: no images are sent, so
+Reddit needs no image host permission and the "Check images in X posts" setting
+doesn't apply. Key: the post ID (`t3_…` without the prefix), so a post gets the same
+verdict in a feed and in search. Ads (`shreddit-ad-post`) are skipped. The post
+page and comments haven't been looked at. See `src/content/adapters/reddit.ts`.
+
+YouTube and X recycle DOM nodes. All state (verdicts, reveals) is keyed by item ID,
 never by element.
 
 ## Decision pipeline
@@ -226,6 +236,9 @@ Chosen style: **"BUSTED!" stamp** (variant B of the overlay prototype, kept on t
 
 - Plain TypeScript + CSS inside a closed Shadow DOM, mounted as a `<busted-overlay>`
   element. No framework on the sites.
+- On Reddit a feed post is covered from its title to its last content part (flair,
+  text or media) in the card view. The subreddit/author line and the action bar stay
+  visible. Other views and search results are covered whole.
 - Covers the whole YouTube tile. On X it covers only the post's content (text, media,
   quoted post, card): the author, date, "Replying to" line, a post page's timestamp row
   and the action bar stay visible, so the timeline keeps its shape. The overlay spans
@@ -268,7 +281,7 @@ Chosen style: **"BUSTED!" stamp** (variant B of the overlay prototype, kept on t
 ## UI
 
 Svelte 5 + plain CSS (custom properties). Slick, modern, follows the system theme.
-These pages load only when opened, never on YouTube or X.
+These pages load only when opened, never on YouTube, X or Reddit.
 
 **Popup**: master on/off, toggle for the current site, today's stats (items checked,
 items blurred, estimated neurons vs. the free 10K), last error.
@@ -317,7 +330,7 @@ and reports accuracy at different thresholds.
     topic.ts      topic name, spoiler definition, glossary, default keywords
     entrypoints/  background, content scripts, popup, settings page
     content/      scanner, batcher, overlay
-      adapters/   youtube.ts, x.ts
+      adapters/   youtube.ts, x.ts, reddit.ts
       fixtures/   synthetic page markup for tests
     lib/          Clef and Jev clients (clef.ts, jev.ts, classify.ts sends),
                   settings, caches, keyword matcher
@@ -367,6 +380,15 @@ eval/             test set + scoring script
 - In Jev mode the content script attaches no image URLs. Otherwise every YouTube
   item carries a thumbnail URL and the batcher's 4-image cap holds Jev requests to
   4 items: the first live run, before this fix, cost ~300 tokens per item.
+
+- Reddit (2026-11-11): page structure read by the maintainer with a DevTools script on
+  signed-out www.reddit.com in the light theme (home feed, r/GTA6, a search), since
+  the agent's browser tool refuses reddit.com. The adapter and fixture are written
+  from that output and pass unit tests.
+- Reddit, maintainer's real Firefox (2026-11-11), 0.2.0 build installed from the
+  `.xpi`: reported working on live Reddit. Which pages and themes were tried wasn't
+  recorded, so the post page, the dark theme and non-card views count as unchecked,
+  as does Chrome.
 
 - Self-host proxy (`worker/`): unit tests cover auth, model allow-list, error
   mapping and a round trip with the extension's real Clef client. A live run

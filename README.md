@@ -13,7 +13,7 @@ Works on the latest desktop Chrome, Chromium, Edge and Firefox (142+).
 
 ## Quick start
 
-[Install the extension](#install-from-source), then connect it in one of three ways:
+[Install the extension](#install), then connect it in one of three ways:
 
 - **Just you:** paste a free Cloudflare API token and your account ID into Busted!'s
   settings. [Two-minute setup](#set-up).
@@ -40,7 +40,13 @@ Works on the latest desktop Chrome, Chromium, Edge and Firefox (142+).
 On our 150-example test set, the default `clef` model judged 99% correctly and Jev
 98% ([details](eval/README.md)).
 
-## Install (from source)
+## Install
+
+- **Chrome / Chromium / Edge:** [Chrome Web Store](https://chromewebstore.google.com/detail/busted-%E2%80%94-spoiler-blocker/eggbgmgafnkeckpopfcmnnopcjgnbnfb)
+- **Firefox:** not listed on Firefox Add-ons yet. [Build it from source](#install-from-source)
+  for now.
+
+## Install from source
 
 Requires Node.js 22.18+.
 

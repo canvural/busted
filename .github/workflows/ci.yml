@@ -50,10 +50,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release create "$GITHUB_REF_NAME" .output/*.zip --generate-notes
-      - uses: actions/upload-artifact@v4
-        with:
-          name: store-packages
-          path: .output/*.zip
 
   # Submits the release to the Chrome Web Store and Firefox Add-ons. Off until the
   # repository variable PUBLISH_TO_STORES is "true", so forks aren't affected.
@@ -70,10 +66,10 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - uses: actions/download-artifact@v4
-        with:
-          name: store-packages
-          path: .output
+      - name: Download the release's store packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download "$GITHUB_REF_NAME" --pattern '*.zip' --dir .output
       - name: Submit to the stores
         env:
           CHROME_API_VERSION: v2

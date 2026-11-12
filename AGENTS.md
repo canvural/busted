@@ -22,3 +22,10 @@ Commands are in `README.md` under Development. The reasons behind design choices
 - `src/topic.ts` is the only GTA VI-specific file. Bump `promptVersion` whenever the spoiler definition, glossary or question wording changes. It's part of the verdict cache key, so old verdicts get dropped.
 - `src/content/adapters/` reads each site's markup. The fixtures in `src/content/fixtures/` are synthetic copies of real pages, so update the fixture along with any adapter fix.
 - `eval/` scores Clef or Jev against labeled cases (see `eval/README.md`). Running it spends Workers AI quota on the Cloudflare account in `.env` (or TypeSafe credit with `--model jev`), so ask before running it.
+
+## Releasing
+
+- A `v*` tag publishes. CI builds the zips, creates a GitHub Release and submits them to the Chrome Web Store and Firefox Add-ons. A store submission can't be taken back, so ask before pushing a tag.
+- To release: bump `version` in `package.json`, commit, then `git tag v<version> && git push origin main v<version>`. CI fails if the tag and `package.json` disagree.
+- Neither store accepts a version twice, so if a release fails partway, release the next patch version rather than re-tagging.
+- Store credentials, listing copy and what changes for users when permissions are added: `docs/STORE.md`.

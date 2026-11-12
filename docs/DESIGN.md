@@ -5,7 +5,7 @@ click-to-reveal overlay. It uses Cloudflare's Clef decision model to judge conte
 
 Status: v0.1.0 built and tested on live YouTube and X in Chromium; store packages
 in `.output/`. Reddit support added in 0.2.0 (2026-11-11), tested on live Reddit in
-Firefox. Last updated 2026-11-11.
+Firefox. Listed on the Chrome Web Store and Firefox Add-ons. Last updated 2026-11-12.
 
 ## Goals
 
@@ -315,8 +315,9 @@ and reports accuracy at different thresholds.
   add-on lint (`web-ext lint`), and a Chrome build.
 - On a version tag: build Chrome and Firefox zips and attach them to a GitHub
   Release.
-- The first store upload is manual. After that, the same tag submits the zips to
-  the Chrome Web Store and Firefox Add-ons with `wxt submit`, once the
+- The first upload to each store was manual and both listings are live. The same
+  tag submits the zips to the Chrome Web Store and Firefox Add-ons with
+  `wxt submit`, once the
   `PUBLISH_TO_STORES` variable and the `stores` environment secrets are set (see
   `docs/STORE.md`).
 - Privacy policy in the repo: no telemetry, data goes only to the endpoint the user

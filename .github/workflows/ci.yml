@@ -56,8 +56,8 @@ jobs:
           path: .output/*.zip
 
   # Submits the release to the Chrome Web Store and Firefox Add-ons. Off until the
-  # repository variable PUBLISH_TO_STORES is "true", so forks and the first (manual)
-  # store submission aren't affected. Setup: docs/STORE.md, "Releasing updates".
+  # repository variable PUBLISH_TO_STORES is "true", so forks aren't affected.
+  # Setup: docs/STORE.md, "Releasing updates".
   publish:
     if: vars.PUBLISH_TO_STORES == 'true'
     needs: release

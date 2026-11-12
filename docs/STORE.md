@@ -4,6 +4,11 @@ Copy for the Chrome Web Store and Firefox Add-ons (AMO). Upload
 `.output/busted-<version>-chrome.zip` and `.output/busted-<version>-firefox.zip`
 (AMO also wants `.output/busted-<version>-sources.zip`).
 
+Both listings are live:
+
+- Chrome Web Store: https://chromewebstore.google.com/detail/busted-%E2%80%94-spoiler-blocker/eggbgmgafnkeckpopfcmnnopcjgnbnfb
+- Firefox Add-ons: https://addons.mozilla.org/addon/busted-spoiler-blocker-gta-vi/
+
 ## Name
 
 Busted! — Spoiler Blocker for GTA VI
@@ -127,8 +132,8 @@ Firefox, site access is optional: existing users see "Allow access to YouTube, X
 and Reddit" on the settings page and Reddit stays uncovered until they click it.
 Neither behaviour has been watched on a real update yet.
 
-The first version goes up by hand on both stores; the APIs can't create a
-listing. After that, every `v*` tag builds the zips, attaches them to a GitHub
+The first version went up by hand on both stores, since the APIs can't create a
+listing. From here on, every `v*` tag builds the zips, attaches them to a GitHub
 Release and, once set up, submits them to both stores (the `publish` job in
 `.github/workflows/ci.yml`).
 
@@ -136,7 +141,7 @@ To release: bump `version` in `package.json`, commit, then
 `git tag v<version> && git push origin main v<version>`. The workflow fails if the
 tag and `package.json` disagree. Neither store accepts the same version twice.
 
-One-time setup, after both listings are live:
+One-time setup for store publishing:
 
 1. **Chrome.** In Google Cloud, create a project, enable the Chrome Web Store
    API, create a service account and download a JSON key for it. In the Chrome

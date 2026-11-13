@@ -78,5 +78,5 @@ export const topic: Topic = {
     'Raul',
     'Brian Heder',
   ],
-  promptVersion: 1,
+  promptVersion: 2,
 };

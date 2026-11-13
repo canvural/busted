@@ -33,6 +33,12 @@ export const NEURONS_PER_MILLION_TOKENS: Record<ClefModel, number> = { clef: 21_
 /** Free Workers AI allocation per account per day, reset at 00:00 UTC. */
 export const FREE_NEURONS_PER_DAY = 10_000;
 
+/**
+ * Field holding the post a reply was written under. It's there so a reply like "can't
+ * believe he dies" can be understood; the reply is what gets judged.
+ */
+export const REPLY_CONTEXT_FIELD = 'replying_to';
+
 type StateItem = Record<string, string | string[] | number[]>;
 
 export interface ClefRequest {
@@ -80,6 +86,10 @@ export function buildClefRequest(items: readonly ClefItem[], model: ClefModel, t
       instructions:
         `Is items.${qid} a ${topic.name} spoiler, as defined in context.spoiler_definition? ` +
         `Judge its text and any images listed in its attached_images. ` +
+        (REPLY_CONTEXT_FIELD in item.fields
+          ? `Its ${REPLY_CONTEXT_FIELD} is the post it was written under: read it to understand what the item refers to, ` +
+            `but answer for what the item itself reveals. A reply that reveals nothing is not a spoiler, whatever it was written under. `
+          : '') +
         `Use context.glossary to recognize ${topic.name} characters and places.`,
     };
   });

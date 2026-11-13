@@ -30,7 +30,8 @@ Works on the latest desktop Chrome, Chromium, Edge and Firefox (142+).
 
 - **YouTube:** home feed, search results, the "up next" list, Shorts, channel pages,
   and the title of the video you're watching.
-- **X:** posts, quoted posts, link previews and images.
+- **X:** posts, quoted posts, link previews and images. Replies on a post's page are
+  judged with that post as context.
 - **Reddit:** posts in feeds and search results on `www.reddit.com`. Text only:
   title, subreddit, flair and the text preview. Comments aren't covered.
 - Only posts and videos that mention a GTA VI keyword (game name, characters,

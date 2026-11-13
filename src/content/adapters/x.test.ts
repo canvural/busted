@@ -1,8 +1,9 @@
 // @vitest-environment happy-dom
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { beforeAll, describe, expect, it } from 'vitest';
-import { MAX_IMAGES_PER_TWEET, xAdapter } from './x';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { setPageUrl } from '../test-helpers';
+import { MAX_IMAGES_PER_TWEET, pagePostId, xAdapter } from './x';
 
 const byId = (id: string) => document.getElementById(id) as HTMLElement;
 const extract = (id: string, includeImages = true) => xAdapter.extract(byId(id), { includeImages });
@@ -15,7 +16,7 @@ beforeAll(() => {
 
 describe('xAdapter', () => {
   it('matches every post', () => {
-    expect(document.querySelectorAll(xAdapter.itemSelector)).toHaveLength(6);
+    expect(document.querySelectorAll(xAdapter.itemSelector)).toHaveLength(7);
   });
 
   it('reads a plain post and its id from the status link around <time>', () => {
@@ -83,6 +84,64 @@ describe('xAdapter', () => {
 
   it('reads link card text', () => {
     expect(extract('card')?.fields).toEqual({ card: 'gamewire.example Every character who dies in GTA 6' });
+  });
+
+  describe('replies', () => {
+    const open = (path: string) => setPageUrl(`https://x.com${path}`);
+    afterEach(() => open('/home'));
+
+    it('reads the main post from the page address', () => {
+      expect(pagePostId('/heistwatch/status/1005')).toBe('1005');
+      // A photo can open over a timeline, whose posts aren't replies.
+      expect(pagePostId('/heistwatch/status/1005/photo/1')).toBeNull();
+      expect(pagePostId('/home')).toBeNull();
+      expect(pagePostId('/search')).toBeNull();
+    });
+
+    it("adds the main post's text to a reply on a post page, under its own id", () => {
+      open('/heistwatch/status/1005');
+      expect(extract('reply')).toMatchObject({
+        id: 'x:1006:re:1005',
+        fields: { text: "can't believe he actually dies", replying_to: "the ending cutscene leaked, it's Jason" },
+      });
+    });
+
+    it('leaves a reply alone away from its post page', () => {
+      expect(extract('reply')).toMatchObject({ id: 'x:1006', fields: { text: "can't believe he actually dies" } });
+      expect(extract('reply')?.fields).not.toHaveProperty('replying_to');
+    });
+
+    it('gives no context to the main post or to the older posts above it', () => {
+      open('/heistwatch/status/1005');
+      expect(extract('focal')?.id).toBe('x:1005');
+      expect(extract('focal')?.fields).not.toHaveProperty('replying_to');
+      expect(extract('plain')?.id).toBe('x:1001');
+      expect(extract('plain')?.fields).not.toHaveProperty('replying_to');
+    });
+
+    it('still knows the main post after X removed it from the page', () => {
+      open('/heistwatch/status/1005');
+      const focal = byId('focal');
+      const next = focal.nextElementSibling!;
+      extract('focal');
+      focal.remove();
+      // Scrolling through more replies than are remembered must not push it out.
+      const later = Array.from({ length: 60 }, (_, i) => {
+        const clone = byId('reply').cloneNode(true) as HTMLElement;
+        clone.querySelector('a[href*="/status/"]')!.setAttribute('href', `/sadgamer/status/${2000 + i}`);
+        document.body.append(clone);
+        const item = xAdapter.extract(clone, { includeImages: true });
+        clone.remove();
+        return item;
+      });
+      next.before(focal);
+      expect(later.at(-1)).toMatchObject({ id: 'x:2059:re:1005', fields: { replying_to: "the ending cutscene leaked, it's Jason" } });
+    });
+
+    it('gives no context when the main post was never seen', () => {
+      open('/leonidaleaks/status/999');
+      expect(extract('reply')?.id).toBe('x:1006');
+    });
   });
 
   it('skips posts without a status link (ads)', () => {

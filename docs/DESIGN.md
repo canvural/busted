@@ -68,6 +68,34 @@ Key: video ID. Selectors and their sources are documented in
 2 images per post (a request holds 4, so this keeps batches useful). Key: post ID,
 from the status link wrapping the post's `<time>`. See `src/content/adapters/x.ts`.
 
+Replies on a post page (exactly `/<user>/status/<ID>`, not its photo view) also carry the main post's text as
+`replying_to`, so "can't believe he dies" can be understood. The question tells the
+model to judge the reply itself and use the post above it only as context, so a
+harmless reply under a spoiler stays visible.
+- A reply is any post on that page with a larger ID than the main post: IDs grow over
+  time, so those were written later. The older posts above the main post get no context.
+- A reply to another reply gets the main post too, not the reply it directly answers.
+- The keyword pre-filter looks at `replying_to` as well. Every reply under a matching
+  post is therefore sent, which is the point, and costs more requests on those pages.
+- Such a reply's key is `<post ID>:re:<main post ID>`, so its verdict is kept apart
+  from the one the same reply gets on a timeline, where it has no context.
+- X removes posts that scroll far away, so the adapter remembers the main posts of the
+  last 50 post pages and still knows the main post deep in a reply list.
+- The main post's text adds up to 600 characters to each reply's request.
+- Checked on one signed-in post page (2026-11-13, adapter code run in the page): the
+  main post was followed by 261 replies and a "Show probable spam" row, nothing else.
+  After scrolling until X had removed the main post, 81 of 81 replies still carried it,
+  and on a reply's own page the post above it got none. If X lists other posts under
+  the replies (none were seen), newer ones would wrongly get the main post as context.
+- Not done: a reply shown under its parent on a timeline gets no context, and neither
+  does a reply opened on its own page, although the post it answers is right above it.
+- End to end (2026-11-13, development build in the maintainer's Chromium, `clef`): on a
+  real post page whose main post was covered, four made-up replies with no keyword of
+  their own were added to the page. The two that reveal something in context ("can't
+  believe he actually dies in the last mission") were covered; "lol no way" and a
+  complaint about spoilers were not. On another thread 93 real replies were read with
+  the main post as context and none was covered.
+
 **Reddit** (www.reddit.com) — posts in the home feed, subreddit feeds (including the
 pinned highlight cards) and search results. Inputs: title, subreddit, flair and, for
 text posts, the text preview shown in the feed. Text only: no images are sent, so
@@ -303,7 +331,7 @@ guide. Firefox asks for site access here (MV3 host permissions are optional ther
 
 ## Evaluation
 
-About 150 made-up but realistic examples: fake story spoilers, leak-style posts,
+About 154 made-up but realistic examples: fake story spoilers, leak-style posts,
 trailer and news posts that aren't spoilers, unrelated GTA V content, and tricky
 cases. Reviewed by the maintainer, then extended with real material after launch.
 A dev-only script runs them against both models with a token from a local `.env`

@@ -8,7 +8,7 @@ import type { SiteAdapter } from './adapter';
 import { xAdapter } from './adapters/x';
 import { youtubeAdapter } from './adapters/youtube';
 import { RETRY_AFTER_ERROR_MS, startScanner, type Scanner } from './scanner';
-import { FakeIntersectionObserver, hideButtonOf, openShadowRoots, surfaceOf } from './test-helpers';
+import { FakeIntersectionObserver, hideButtonOf, openShadowRoots, setPageUrl, surfaceOf } from './test-helpers';
 
 const fixture = readFileSync(join(import.meta.dirname, 'fixtures/youtube.html'), 'utf8');
 const SPOILER = 'yt:AAAAAAAAAA1'; // "GTA 6 ENDING EXPLAINED - Lucia's Last Heist"
@@ -202,5 +202,19 @@ describe('scanner', () => {
 
     expect(surfaceOf(fresh)).not.toBeNull();
     expect(el('plain').querySelectorAll('busted-overlay')).toHaveLength(1);
+  });
+
+  it('checks a keyword-free X reply when the post it answers matches, and covers only the reply', async () => {
+    document.documentElement.innerHTML = readFileSync(join(import.meta.dirname, 'fixtures/x.html'), 'utf8');
+    setPageUrl('https://x.com/heistwatch/status/1005');
+    try {
+      const classify = await start({ 'x:1006:re:1005': 0.95 }, {}, xAdapter);
+      const sent = classify.mock.calls.flatMap(([items]) => items).find((item) => item.id === 'x:1006:re:1005');
+      expect(sent?.fields).toEqual({ text: "can't believe he actually dies", replying_to: "the ending cutscene leaked, it's Jason" });
+      expect(surfaceOf(el('reply-column'))).not.toBeNull();
+      expect(surfaceOf(el('focal-column'))).toBeNull();
+    } finally {
+      setPageUrl('about:blank');
+    }
   });
 });

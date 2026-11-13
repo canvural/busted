@@ -1,6 +1,6 @@
 # Eval set
 
-`cases.jsonl` holds 150 made-up but realistic YouTube and X items, each labeled
+`cases.jsonl` holds 154 made-up but realistic YouTube and X items, each labeled
 spoiler or not. A dev script runs them against `clef-flash`, `clef` or TypeSafe's Jev and reports
 accuracy at different thresholds (see `docs/DESIGN.md` → Evaluation). There are no
 real GTA VI story spoilers yet, so all the plot points are invented. Every case is
@@ -9,8 +9,8 @@ text-only. Image cases come after launch.
 | | Total | Spoiler | Not spoiler |
 |---|---|---|---|
 | YouTube | 70 | 29 | 41 |
-| X | 80 | 31 | 49 |
-| **All** | **150** | **60 (40%)** | **90** |
+| X | 84 | 33 | 51 |
+| **All** | **154** | **62 (40%)** | **92** |
 
 ## Schema
 
@@ -23,7 +23,8 @@ One JSON object per line:
 
 - `item` holds exactly what the site adapter extracts. On X, `quoted` is the
   quoted tweet's text, `card` is the link card's title (string or null), and `alt`
-  lists image alt texts.
+  lists image alt texts. Replies on a post page also have `replying_to`, the text of
+  the post they answer (x-081 to x-084); other cases leave the key out.
 - `label`: `true` means it's a spoiler.
 - `note`: why it got that label. Notes starting with `BORDERLINE:` mark hard calls
   the maintainer has confirmed (see below).
@@ -36,16 +37,16 @@ Each category is either all spoilers or all non-spoilers.
 | Spoiler (`true`) | YT | X | | Not spoiler (`false`) | YT | X |
 |---|---|---|---|---|---|---|
 | `ending` | 8 | 9 | | `release-news` (date, price, preorder, platform, performance) | 8 | 9 |
-| `character-death` | 3 | 5 | | `trailer` (official trailers, screenshots, marketing) | 5 | 6 |
-| `betrayal` | 3 | 6 | | `meme` (hype, jokes) | 4 | 6 |
-| `plot-detail` (twists, story events) | 7 | 3 | | `community` (speedruns, streams, "don't spoil me", spoiler PSAs) | 3 | 6 |
+| `character-death` | 3 | 6 | | `trailer` (official trailers, screenshots, marketing) | 5 | 6 |
+| `betrayal` | 3 | 7 | | `meme` (hype, jokes) | 4 | 6 |
+| `plot-detail` (twists, story events) | 7 | 3 | | `community` (speedruns, streams, "don't spoil me", spoiler PSAs) | 3 | 7 |
 | `mission-detail` | 3 | 2 | | `unrelated` (Florida news, real people named Lucia/Jason, "Vice City" businesses) | 4 | 5 |
 | `late-game` | 1 | 1 | | `gta5` (GTA V story and GTA Online) | 4 | 4 |
 | `leak` (leaked footage/info, plot rumors) | 2 | 3 | | `review-no-spoilers` | 5 | 2 |
 | `datamine` | 2 | 2 | | `classic-gta` (Vice City 2002, VCS) | 3 | 3 |
 | | | | | `other-game` | 3 | 2 |
 | | | | | `rumor` (rumors that aren't about the story) | 2 | 3 |
-| | | | | `vague-teaser` (reactions with no content) | 0 | 3 |
+| | | | | `vague-teaser` (reactions with no content) | 0 | 4 |
 
 Non-English cases (one spoiler and one non-spoiler per language):
 - Spanish: yt-007, x-045
@@ -81,6 +82,10 @@ material?** Whether the claim is true doesn't matter.
   content shows the ending.
 - **Spoilers in quoted tweets, link cards or alt text** count. The model sees all
   the fields, so the item is a spoiler if any field is.
+- **Replies** are the exception: `replying_to` is context, not content. A reply is
+  labeled by what it reveals once you know what it answers. "can't believe he dies"
+  under a post about Jason is a spoiler (x-081); "lol no way" under a spoiler is
+  not (x-083).
 - **Trailer-derived story talk** (breakdowns, "everything we know about the
   story") is not a spoiler. It only uses official marketing.
 - **Other games' spoilers** (GTA V, Vice City 2002, RDR2) are not spoilers, even
@@ -136,6 +141,9 @@ measures exactly what ships. Prints accuracy, precision and recall per threshold
 lists every wrong answer at 0.5.
 
 ## Results (2026-10-30, prompt version 1)
+
+These runs used the first 150 cases. The four reply cases (x-081 to x-084) and
+prompt version 2, which adds the reply wording, haven't been scored yet.
 
 | Model | Items per request | Accuracy at 0.5 | Missed spoilers | False alarms | Input tokens | Time |
 |---|---|---|---|---|---|---|

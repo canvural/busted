@@ -46,3 +46,8 @@ export function hideButtonOf(target: Element): HTMLButtonElement | null {
   const host = target.querySelector('busted-overlay');
   return (host?.shadowRoot?.querySelector('.hide-again') as HTMLButtonElement | null) ?? null;
 }
+
+/** Changes the page address without loading anything (a happy-dom extra). */
+export function setPageUrl(url: string): void {
+  (window as unknown as { happyDOM: { setURL(url: string): void } }).happyDOM.setURL(url);
+}

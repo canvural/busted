@@ -44,6 +44,14 @@ describe('buildClefRequest', () => {
     ]);
   });
 
+  it('tells Clef to treat the post a reply answers as context only', () => {
+    const reply: ClefItem = { id: 'x:2:re:1', fields: { text: 'he dies??', replying_to: 'GTA 6 ending leaked' } };
+    const { body } = buildClefRequest([reply, items[1]!], 'clef', topic);
+    expect(body.state.items.item_1).toEqual(reply.fields);
+    expect(body.questions.item_1!.instructions).toContain('replying_to');
+    expect(body.questions.item_2!.instructions).not.toContain('replying_to');
+  });
+
   it('uses question ids made only of characters Clef allows', () => {
     const { body } = buildClefRequest(items, 'clef', topic);
     for (const qid of Object.keys(body.questions)) expect(qid).toMatch(/^[A-Za-z0-9_.-]{1,100}$/);

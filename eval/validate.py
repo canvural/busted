@@ -60,7 +60,10 @@ for n, c in cases:
         if set(item) != {"title", "channel"} or not all(isinstance(item[k], str) and item[k] for k in item):
             err(n, f"bad youtube item {item}")
     else:
-        ok = (set(item) == {"text", "quoted", "card", "alt"} and isinstance(item["text"], str) and item["text"]
+        # replying_to is only present on replies: the post they answer, given as context.
+        reply = item.get("replying_to", "-")
+        ok = (set(item) - {"replying_to"} == {"text", "quoted", "card", "alt"} and isinstance(reply, str) and reply
+              and isinstance(item["text"], str) and item["text"]
               and all(item[k] is None or (isinstance(item[k], str) and item[k]) for k in ("quoted", "card"))
               and isinstance(item["alt"], list) and all(isinstance(a, str) and a for a in item["alt"]))
         if not ok:
@@ -79,7 +82,7 @@ def text_of(c):
     it = c["item"]
     if c["site"] == "youtube":
         return f"{it['title']} {it['channel']}"
-    return " ".join([it["text"], it["quoted"] or "", it["card"] or "", *it["alt"]])
+    return " ".join([it["text"], it["quoted"] or "", it["card"] or "", *it["alt"], it.get("replying_to", "")])
 
 
 def passes(c):

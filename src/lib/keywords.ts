@@ -9,7 +9,7 @@
 const WORD_CHAR = String.raw`[\p{Script=Latin}\p{Nd}]`;
 
 /** Lowercase, strip accents, and unify apostrophes so "Lúcia" and "Dre’Quan" match. */
-export function normalize(text: string): string {
+function normalize(text: string): string {
   return text
     .normalize('NFKD')
     .replace(/\p{M}/gu, '')

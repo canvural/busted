@@ -45,7 +45,7 @@ function subredditFromHref(href: string | null | undefined): string {
 
 /** The post's own parts, not those of anything nested deeper. */
 function slotted(post: HTMLElement, slot: string): HTMLElement | null {
-  return [...post.children].find((child) => child.getAttribute('slot') === slot) as HTMLElement | null ?? null;
+  return post.querySelector<HTMLElement>(`:scope > [slot="${slot}"]`);
 }
 
 /** Text with a space between blocks, so paragraphs don't run together. */
@@ -66,7 +66,7 @@ export function contentParts(post: HTMLElement): Element[] {
     (el) => el !== null && (el.childElementCount > 0 || el.textContent.trim() !== ''),
   ) as HTMLElement[];
   const first = parts[0];
-  const last = parts[parts.length - 1];
+  const last = parts.at(-1);
   return first && last ? [first, last] : [];
 }
 

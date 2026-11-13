@@ -1,14 +1,12 @@
 // @vitest-environment happy-dom
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { byId, loadFixture } from '../test-helpers';
 import { youtubeAdapter, videoIdFromHref } from './youtube';
 
-const byId = (id: string) => document.getElementById(id) as HTMLElement;
 const extract = (id: string, includeImages = true) => youtubeAdapter.extract(byId(id), { includeImages });
 
 beforeAll(() => {
-  document.documentElement.innerHTML = readFileSync(join(import.meta.dirname, '../fixtures/youtube.html'), 'utf8');
+  loadFixture('youtube');
   document.documentElement.setAttribute('dark', '');
 });
 

@@ -3,7 +3,7 @@ import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { handleClassify } from './classify-handler';
 import { IDBFactory } from 'fake-indexeddb';
 import { LruCache } from './lru';
-import { isClassifyRequest } from './messages';
+import { isClassifyRequest, isClearCacheRequest } from './messages';
 import { updateSettings } from './settings';
 import { getLastError, getTodayStats } from './stats';
 import { openVerdictStore } from './verdict-store';
@@ -137,18 +137,15 @@ describe('handleClassify', () => {
   });
 });
 
-describe('isClassifyRequest', () => {
+describe('message guards', () => {
   it('accepts only well-formed classify messages', () => {
     expect(isClassifyRequest({ type: 'classify', items: [] })).toBe(true);
     expect(isClassifyRequest({ type: 'classify' })).toBe(false);
     expect(isClassifyRequest({ type: 'other', items: [] })).toBe(false);
     expect(isClassifyRequest(null)).toBe(false);
   });
-});
 
-describe('isClearCacheRequest', () => {
-  it('recognizes the message', async () => {
-    const { isClearCacheRequest } = await import('./messages');
+  it('recognizes the clear-cache message', () => {
     expect(isClearCacheRequest({ type: 'clear-cache' })).toBe(true);
     expect(isClearCacheRequest({ type: 'classify' })).toBe(false);
   });

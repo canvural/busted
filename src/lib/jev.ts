@@ -6,7 +6,7 @@
  * Imports use `.ts` extensions because eval/run.ts loads this file directly in Node.
  */
 import type { Topic } from '../topic';
-import { type BuiltRequest, buildClefRequest, type ClefItem, ClefError, type ClefResult, parseAnswers, type Answers } from './clef.ts';
+import { type BuiltRequest, buildClefRequest, type ClefItem, type ClefError, type ClefResult, httpError, parseAnswers, type Answers } from './clef.ts';
 
 /**
  * Pinned to one version: the alias `jev-latest` moves with each release, which would
@@ -46,9 +46,6 @@ export function parseJevResponse(json: unknown, questionToItem: Map<string, stri
 export function jevHttpError(status: number, body: unknown): ClefError {
   const detail = (body as JevBody | null)?.detail;
   const message = (typeof detail === 'string' ? detail : detail?.message) ?? `HTTP ${status}`;
-  if (status === 401 || status === 403) return new ClefError('auth', message, status);
-  if (status === 429) return new ClefError('rate-limited', message, status);
-  // 529 means TypeSafe is overloaded.
-  if (status >= 500) return new ClefError('server', message, status);
-  return new ClefError('bad-request', message, status);
+  // 529 means TypeSafe is overloaded; it becomes a server error like any 5xx.
+  return httpError(status, message);
 }

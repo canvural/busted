@@ -6,7 +6,8 @@
  * WeakSets, the near-viewport set only holds what's on or near screen, and verdicts
  * live in a fixed-size LRU.
  */
-import { createKeywordMatcher, type KeywordMatcher } from '../lib/keywords';
+import { errorMessage } from '../lib/clef';
+import { createKeywordMatcher } from '../lib/keywords';
 import { LruCache } from '../lib/lru';
 import type { ClassifyResponse, ContentItem } from '../lib/messages';
 import { activeModel, type Settings } from '../lib/settings';
@@ -40,7 +41,7 @@ export interface Scanner {
 export async function startScanner(deps: ScannerDeps): Promise<Scanner> {
   const { adapter } = deps;
   let settings = await deps.getSettings();
-  let matches: KeywordMatcher = createKeywordMatcher(settings.keywords);
+  let matches = createKeywordMatcher(settings.keywords);
   let pausedUntil = 0;
   let stopped = false;
   let scanTimer: ReturnType<typeof setTimeout> | null = null;
@@ -53,12 +54,9 @@ export async function startScanner(deps: ScannerDeps): Promise<Scanner> {
 
   const active = () => !stopped && settings.enabled && settings.sites[adapter.site];
   // Jev checks text only. Sending no image URLs also lets its batches fill up to the
-  // text-item limit instead of the 4-image one. Reddit is text only for now.
-  const includeImages = () => {
-    if (settings.authMode === 'jev') return false;
-    if (adapter.site === 'youtube') return true;
-    return adapter.site === 'x' && settings.tweetImages;
-  };
+  // text-item limit instead of the 4-image one. Images on X are a setting; Reddit's
+  // adapter reads text only, whatever this says.
+  const includeImages = () => settings.authMode !== 'jev' && (adapter.site !== 'x' || settings.tweetImages);
   const tagged = (id?: string) =>
     document.querySelectorAll<HTMLElement>(id === undefined ? `[${ID_ATTR}]` : `[${ID_ATTR}="${CSS.escape(id)}"]`);
 
@@ -76,7 +74,7 @@ export async function startScanner(deps: ScannerDeps): Promise<Scanner> {
   function apply(el: HTMLElement, item: ExtractedItem, score: number): void {
     const current = overlays.get(el);
     if (score < settings.sensitivity) {
-      if (current) removeOverlay(el);
+      removeOverlay(el);
       return;
     }
     // Same item on the same element: just sync. A new target means the site re-rendered
@@ -85,7 +83,7 @@ export async function startScanner(deps: ScannerDeps): Promise<Scanner> {
       current.controller.setRevealed(revealed.has(item.id));
       return;
     }
-    if (current) removeOverlay(el);
+    removeOverlay(el);
     const controller = mountOverlay(item.overlayTarget, {
       topicName: deps.topicName,
       kind: item.kind,
@@ -117,8 +115,8 @@ export async function startScanner(deps: ScannerDeps): Promise<Scanner> {
 
     const score = verdicts.get(item.id);
     if (score !== undefined) return apply(el, item, score);
-    if (!settings.strictMode && !matches(itemText(item))) return;
     if (Date.now() < pausedUntil) return;
+    if (!settings.strictMode && !matches(itemText(item))) return;
     batcher.add({ id: item.id, fields: item.fields, ...(item.imageUrls && { imageUrls: item.imageUrls }) });
   }
 
@@ -132,7 +130,7 @@ export async function startScanner(deps: ScannerDeps): Promise<Scanner> {
         return;
       }
       // e.g. the background was restarting: treat like a network error
-      response = { ok: false, error: 'network', message: error instanceof Error ? error.message : String(error) };
+      response = { ok: false, error: 'network', message: errorMessage(error) };
     }
     if (stopped) return;
     if (!response.ok) {

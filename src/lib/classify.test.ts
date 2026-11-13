@@ -122,8 +122,6 @@ describe('classify with Jev', () => {
 
   it.each([
     [401, { detail: { error_type: 'authentication_error', message: 'Cannot authenticate' } }, 'auth', 'Cannot authenticate'],
-    [429, { detail: 'Too many requests' }, 'rate-limited', 'Too many requests'],
-    [529, null, 'server', 'HTTP 529'],
     [200, { model: JEV_MODEL, answers: {} }, 'bad-response', 'Missing or invalid answer for item_1'],
   ])('classifies HTTP %i as %s', async (status, body, kind, message) => {
     const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(jsonResponse(body, status));

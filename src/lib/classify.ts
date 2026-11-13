@@ -15,6 +15,7 @@ import {
   type ClefResult,
   clefUrl,
   type CloudflareEnvelope,
+  errorMessage,
   parseClefResponse,
 } from './clef.ts';
 import { buildJevRequest, JEV_URL, type JevAuth, jevHttpError, parseJevResponse } from './jev.ts';
@@ -51,7 +52,7 @@ export async function classify(items: readonly ClefItem[], options: ClassifyOpti
     });
   } catch (error) {
     if (signal?.aborted) throw error;
-    throw new ClefError('network', error instanceof Error ? error.message : String(error));
+    throw new ClefError('network', errorMessage(error));
   }
 
   const json: unknown = await response.json().catch(() => null);

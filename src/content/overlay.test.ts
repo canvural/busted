@@ -11,6 +11,7 @@ beforeEach(() => {
 afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 const tile = () => document.getElementById('tile') as HTMLElement;
@@ -105,7 +106,6 @@ describe('mountOverlay', () => {
 
     controller.remove();
     expect(disconnect).toHaveBeenCalled();
-    vi.unstubAllGlobals();
   });
 
   it('covers the whole target when there are no rows', () => {

@@ -1,16 +1,13 @@
 // @vitest-environment happy-dom
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { setPageUrl } from '../test-helpers';
+import { byId, loadFixture, setPageUrl } from '../test-helpers';
 import { MAX_IMAGES_PER_TWEET, pagePostId, xAdapter } from './x';
 
-const byId = (id: string) => document.getElementById(id) as HTMLElement;
 const extract = (id: string, includeImages = true) => xAdapter.extract(byId(id), { includeImages });
 const coveredRows = (id: string) => extract(id)?.overlayRows?.().map((row) => row.id);
 
 beforeAll(() => {
-  document.documentElement.innerHTML = readFileSync(join(import.meta.dirname, '../fixtures/x.html'), 'utf8');
+  loadFixture('x');
   document.body.style.backgroundColor = 'rgb(0, 0, 0)';
 });
 

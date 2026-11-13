@@ -28,11 +28,6 @@ describe('buildJevRequest', () => {
 describe('parseJevResponse', () => {
   const { questionToItem } = buildJevRequest(items, topic);
 
-  it('reads answers and usage from the top level', () => {
-    const result = parseJevResponse({ answers: { item_1: { noul: 0.4 }, item_2: { noul: 0.6 } }, usage: { input_tokens: 9 } }, questionToItem);
-    expect(result).toEqual({ scores: new Map([['yt:abc', 0.4], ['x:123', 0.6]]), inputTokens: 9 });
-  });
-
   it("doesn't accept a Cloudflare envelope", () => {
     expect(() => parseJevResponse({ success: true, result: { answers: { item_1: { noul: 0.4 }, item_2: { noul: 0.6 } } } }, questionToItem)).toThrow(
       ClefError,

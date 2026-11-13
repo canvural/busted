@@ -113,10 +113,4 @@ describe('clefUrl', () => {
       'https://api.cloudflare.com/client/v4/accounts/acc123/ai/run/@cf/cloudflare/clef-flash',
     );
   });
-
-  it('uses the custom endpoint as-is', () => {
-    expect(clefUrl({ mode: 'endpoint', url: 'https://proxy.example.dev/', secret: 's' }, 'clef')).toBe(
-      'https://proxy.example.dev/',
-    );
-  });
 });

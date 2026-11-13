@@ -1,14 +1,12 @@
 // @vitest-environment happy-dom
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { byId, loadFixture } from '../test-helpers';
 import { postIdFromHref, redditAdapter } from './reddit';
 
-const byId = (id: string) => document.getElementById(id) as HTMLElement;
 const extract = (id: string) => redditAdapter.extract(byId(id), { includeImages: true });
 
 beforeAll(() => {
-  document.documentElement.innerHTML = readFileSync(join(import.meta.dirname, '../fixtures/reddit.html'), 'utf8');
+  loadFixture('reddit');
   document.documentElement.style.backgroundColor = 'rgb(255, 255, 255)';
 });
 

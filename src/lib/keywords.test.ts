@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { topic } from '../topic';
-import { createKeywordMatcher, normalize } from './keywords';
+import { createKeywordMatcher } from './keywords';
 
 const matches = createKeywordMatcher(topic.defaultKeywords);
 
@@ -54,12 +54,6 @@ describe('createKeywordMatcher', () => {
 
   it('is case- and accent-insensitive for user keywords too', () => {
     expect(createKeywordMatcher(['Café'])('CAFE open')).toBe(true);
-  });
-});
-
-describe('normalize', () => {
-  it('lowercases, strips accents and unifies apostrophes', () => {
-    expect(normalize('Lúcia’S')).toBe("lucia's");
   });
 });
 

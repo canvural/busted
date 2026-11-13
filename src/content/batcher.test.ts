@@ -17,8 +17,8 @@ function setup(isWanted: (id: string) => boolean = () => true) {
   const send = vi.fn((_items: ContentItem[]) => new Promise<void>((resolve) => resolvers.push(resolve)));
   const batcher = new Batcher({ send, isWanted });
   const ids = (call: number) => send.mock.calls[call]![0].map((i) => i.id);
-  const finish = async (n = 1) => {
-    for (let i = 0; i < n; i++) resolvers.shift()?.();
+  const finish = async () => {
+    resolvers.shift()?.();
     await vi.runAllTimersAsync();
   };
   return { batcher, send, ids, finish };

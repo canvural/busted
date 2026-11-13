@@ -51,15 +51,14 @@ export function openVerdictStore(options: VerdictStoreOptions = {}): VerdictStor
 
   let db: Promise<IDBDatabase> | null = null;
   const open = () =>
-    (db ??= new Promise((resolve, reject) => {
+    (db ??= (() => {
       const request = factory.open(DB_NAME, 1);
       request.onupgradeneeded = () => {
         const store = request.result.createObjectStore(STORE, { keyPath: 'key' });
         store.createIndex('at', 'at');
       };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    }));
+      return done(request) as Promise<IDBDatabase>;
+    })());
 
   async function prune(database: IDBDatabase): Promise<void> {
     const tx = database.transaction(STORE, 'readwrite');

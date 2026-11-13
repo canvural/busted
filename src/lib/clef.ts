@@ -8,7 +8,6 @@
 import type { Topic } from '../topic';
 
 export type ClefModel = 'clef-flash' | 'clef';
-export const CLEF_MODELS: readonly ClefModel[] = ['clef-flash', 'clef'];
 
 /** What an adapter extracted from one video or tweet. */
 export interface ClefItem {
@@ -172,10 +171,19 @@ export function clefHttpError(status: number, body: CloudflareEnvelope | null): 
   const message = first?.message ?? `HTTP ${status}`;
   // Workers AI reports the exhausted free allocation as error 4006 ("…daily free allocation of 10,000 neurons…").
   if (first?.code === 4006 || /neurons/i.test(message)) return new ClefError('quota', message, status);
+  return httpError(status, message);
+}
+
+/** The error for a failed HTTP status, shared with Jev. */
+export function httpError(status: number, message: string): ClefError {
   if (status === 401 || status === 403) return new ClefError('auth', message, status);
   if (status === 429) return new ClefError('rate-limited', message, status);
   if (status >= 500) return new ClefError('server', message, status);
   return new ClefError('bad-request', message, status);
+}
+
+export function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 export function clefUrl(auth: ClefAuth, model: ClefModel): string {

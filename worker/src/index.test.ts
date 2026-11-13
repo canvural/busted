@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { classify } from '../../src/lib/classify';
+import { topic } from '../../src/topic';
 import worker, { type Env } from './index';
 
 const clefBody = { model: 'clef', state: { items: {} }, questions: { item_1: { type: 'noul', instructions: 'x' } } };
@@ -63,30 +65,25 @@ describe('proxy worker', () => {
 });
 
 describe('extension ↔ proxy', () => {
+  const proxyFetch = (e: Env) => (url: RequestInfo | URL, init?: RequestInit) => worker.fetch(new Request(url, init), e);
+
   it("the extension's Clef client works against the proxy in endpoint mode", async () => {
-    const { classify } = await import('../../src/lib/classify');
-    const { topic } = await import('../../src/topic');
     const e = env({
       AI: { run: vi.fn().mockResolvedValue({ model: 'clef', answers: { item_1: { noul: 0.97 } }, usage: { input_tokens: 900 } }) },
     });
-    const fetch = (url: RequestInfo | URL, init?: RequestInit) => worker.fetch(new Request(url, init), e);
     const result = await classify([{ id: 'x:1', fields: { text: 'jason sold lucia out' } }], {
       auth: { mode: 'endpoint', url: 'https://proxy.example/', secret: 's3cret' },
       model: 'clef',
       topic,
-      fetch,
+      fetch: proxyFetch(e),
     });
     expect(result.scores.get('x:1')).toBe(0.97);
     expect(result.inputTokens).toBe(900);
   });
 
   it('a wrong secret surfaces as an auth error in the extension', async () => {
-    const { classify } = await import('../../src/lib/classify');
-    const { topic } = await import('../../src/topic');
-    const e = env();
-    const fetch = (url: RequestInfo | URL, init?: RequestInit) => worker.fetch(new Request(url, init), e);
     await expect(
-      classify([{ id: 'x:1', fields: { text: 't' } }], { auth: { mode: 'endpoint', url: 'https://proxy.example/', secret: 'wrong' }, model: 'clef', topic, fetch }),
+      classify([{ id: 'x:1', fields: { text: 't' } }], { auth: { mode: 'endpoint', url: 'https://proxy.example/', secret: 'wrong' }, model: 'clef', topic, fetch: proxyFetch(env()) }),
     ).rejects.toMatchObject({ kind: 'auth' });
   });
 });

@@ -2,7 +2,7 @@ import type { ClefErrorKind } from './clef';
 import type { Settings } from './settings';
 
 /** Plain-English explanation for the toolbar badge tooltip and the popup. */
-export function describeError(kind: ClefErrorKind, mode: Settings['authMode'] = 'cloudflare'): string {
+export function describeError(kind: ClefErrorKind, mode: Settings['authMode']): string {
   const jev = mode === 'jev';
   const model = jev ? 'Jev' : 'Clef';
   const service = jev ? 'TypeSafe' : 'Cloudflare';

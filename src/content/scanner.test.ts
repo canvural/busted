@@ -8,7 +8,7 @@ import type { SiteAdapter } from './adapter';
 import { xAdapter } from './adapters/x';
 import { youtubeAdapter } from './adapters/youtube';
 import { RETRY_AFTER_ERROR_MS, startScanner, type Scanner } from './scanner';
-import { FakeIntersectionObserver, hideButtonOf, openShadowRoots, setPageUrl, surfaceOf } from './test-helpers';
+import { byId as el, FakeIntersectionObserver, hideButtonOf, loadFixture, openShadowRoots, setPageUrl, surfaceOf } from './test-helpers';
 
 const fixture = readFileSync(join(import.meta.dirname, 'fixtures/youtube.html'), 'utf8');
 const SPOILER = 'yt:AAAAAAAAAA1'; // "GTA 6 ENDING EXPLAINED - Lucia's Last Heist"
@@ -20,7 +20,6 @@ let extensionAlive = true;
 beforeEach(() => {
   vi.useFakeTimers();
   openShadowRoots();
-  FakeIntersectionObserver.instances = [];
   vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver);
   document.documentElement.innerHTML = fixture;
   extensionAlive = true;
@@ -58,7 +57,6 @@ async function start(
   return classify;
 }
 
-const el = (id: string) => document.getElementById(id) as HTMLElement;
 const sentIds = (classify: ReturnType<typeof vi.fn>) => classify.mock.calls.flatMap(([items]) => (items as ContentItem[]).map((i) => i.id));
 
 describe('scanner', () => {
@@ -190,7 +188,7 @@ describe('scanner', () => {
   });
 
   it("covers an X post's content, and follows it when X re-renders the column", async () => {
-    document.documentElement.innerHTML = readFileSync(join(import.meta.dirname, 'fixtures/x.html'), 'utf8');
+    loadFixture('x');
     await start({ 'x:1001': 0.95 }, { strictMode: true }, xAdapter);
     expect(surfaceOf(el('plain-column'))).not.toBeNull();
     expect(el('plain-header').querySelector('busted-overlay')).toBeNull();
@@ -205,7 +203,7 @@ describe('scanner', () => {
   });
 
   it('checks a keyword-free X reply when the post it answers matches, and covers only the reply', async () => {
-    document.documentElement.innerHTML = readFileSync(join(import.meta.dirname, 'fixtures/x.html'), 'utf8');
+    loadFixture('x');
     setPageUrl('https://x.com/heistwatch/status/1005');
     try {
       const classify = await start({ 'x:1006:re:1005': 0.95 }, {}, xAdapter);

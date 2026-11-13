@@ -15,7 +15,7 @@ const MODELS = new Set(['clef', 'clef-flash']);
 const MAX_BODY_BYTES = 13 * 1024 * 1024;
 
 function reply(status: number, body: unknown): Response {
-  return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+  return Response.json(body, { status });
 }
 
 /** Same envelope as Cloudflare's REST API, so the extension handles both the same way. */

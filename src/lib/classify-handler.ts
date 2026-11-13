@@ -1,6 +1,6 @@
 import { topic } from '../topic';
 import { classify } from './classify';
-import { ClefError, type ClefItem } from './clef';
+import { ClefError, type ClefItem, errorMessage } from './clef';
 import { imageToDataUrl } from './images';
 import { LruCache } from './lru';
 import type { ClassifyResponse, ContentItem } from './messages';
@@ -29,7 +29,6 @@ export async function clearVerdicts(): Promise<void> {
 
 /** Background side of a `classify` message: caches, images, Clef, stats. Never throws. */
 export async function handleClassify(items: ContentItem[], deps: HandlerDeps = {}): Promise<ClassifyResponse> {
-  const fetch = deps.fetch ?? globalThis.fetch.bind(globalThis);
   const memory = deps.memory ?? sharedMemory;
   const store = deps.store === undefined ? (sharedStore ??= openVerdictStore()) : deps.store;
   const record = deps.record ?? deps.memory === undefined;
@@ -61,16 +60,14 @@ export async function handleClassify(items: ContentItem[], deps: HandlerDeps = {
   const withImages = settings.authMode !== 'jev';
   const clefItems: ClefItem[] = await Promise.all(
     misses.map(async (item) => {
-      if (!withImages) return { id: item.id, fields: item.fields };
-      const images = (await Promise.all((item.imageUrls ?? []).map((url) => imageToDataUrl(url, fetch)))).filter(
-        (dataUrl): dataUrl is string => dataUrl !== null,
-      );
+      const urls = withImages ? (item.imageUrls ?? []) : [];
+      const images = (await Promise.all(urls.map((url) => imageToDataUrl(url, deps.fetch)))).filter((dataUrl) => dataUrl !== null);
       return { id: item.id, fields: item.fields, ...(images.length > 0 && { images }) };
     }),
   );
 
   try {
-    const result = await classify(clefItems, { auth: authFromSettings(settings), model: settings.model, topic, fetch });
+    const result = await classify(clefItems, { auth: authFromSettings(settings), model: settings.model, topic, fetch: deps.fetch });
     const fresh: [string, number][] = [];
     for (const [id, score] of result.scores) {
       memory.set(key(id), score);
@@ -89,11 +86,9 @@ export async function handleClassify(items: ContentItem[], deps: HandlerDeps = {
     }
     return { ok: true, scores };
   } catch (error) {
-    const response: ClassifyResponse =
-      error instanceof ClefError
-        ? { ok: false, error: error.kind, message: error.message }
-        : { ok: false, error: 'bad-response', message: error instanceof Error ? error.message : String(error) };
-    if (record && !response.ok) await setLastError({ kind: response.error, message: response.message, at: Date.now() });
-    return response;
+    const kind = error instanceof ClefError ? error.kind : 'bad-response';
+    const message = errorMessage(error);
+    if (record) await setLastError({ kind, message, at: Date.now() });
+    return { ok: false, error: kind, message };
   }
 }

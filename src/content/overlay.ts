@@ -94,13 +94,13 @@ export interface OverlayController {
   remove(): void;
 }
 
+function swallowEvent(event: Event): void {
+  event.stopPropagation();
+  if (event.type === 'click' || event.type === 'auxclick') event.preventDefault();
+}
+
 function swallow(el: HTMLElement): void {
-  for (const type of SWALLOWED_EVENTS) {
-    el.addEventListener(type, (event) => {
-      event.stopPropagation();
-      if (type === 'click' || type === 'auxclick') event.preventDefault();
-    });
-  }
+  for (const type of SWALLOWED_EVENTS) el.addEventListener(type, swallowEvent);
 }
 
 /** Some site elements are `display: contents` and have no box; cover their first child instead. */
@@ -113,7 +113,7 @@ export function layoutBox(target: HTMLElement): HTMLElement {
 /** Where `rows` sit inside `box`, in px from the top of its padding box. Null when there are none. */
 export function rowsArea(box: HTMLElement, rows: readonly Element[]): { top: number; height: number } | null {
   const first = rows[0];
-  const last = rows[rows.length - 1];
+  const last = rows.at(-1);
   if (!first || !last) return null;
   const origin = box.getBoundingClientRect().top + box.clientTop;
   const top = first.getBoundingClientRect().top - origin;

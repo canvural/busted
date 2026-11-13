@@ -90,7 +90,7 @@ export function contentColumn(article: HTMLElement): HTMLElement | null {
 export function contentRows(column: Element): Element[] {
   const rows = [...column.children].filter(isContent);
   const first = rows[0];
-  const last = rows[rows.length - 1];
+  const last = rows.at(-1);
   return first && last ? [first, last] : [];
 }
 

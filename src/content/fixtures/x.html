@@ -1,113 +1,155 @@
-<!-- Structure copied from a signed-in x.com timeline (2026-10-30) and post pages (2026-11-08, 2026-11-13);
-     accounts, text and IDs are made up. Class names and most wrapper divs are left out, but the
-     nesting around the content column is kept: the overlay depends on it. -->
+<!-- The current X markup, which has no data-testid. Structure copied from a signed-in x.com timeline and
+     post pages (2026-11-24); accounts, text and IDs are made up. Class names, icons and most wrapper divs
+     are left out, but the nesting around the content column is kept: the overlay depends on it.
+     Same posts and ids as x-legacy.html, plus the cases only this markup has. -->
 <html>
 <body style="background-color: rgb(0, 0, 0)">
-  <!-- Plain post, as a reply -->
-  <article id="plain" data-testid="tweet" role="article" tabindex="0">
-    <div><div>
-      <div>
-        <div><div data-testid="Tweet-User-Avatar"><a role="link" tabindex="-1" href="/leonidaleaks"><img alt="" src="https://pbs.twimg.com/profile_images/1/a.jpg"></a></div></div>
-        <div id="plain-column">
-          <div id="plain-header"><div data-testid="User-Name"><a role="link" href="/leonidaleaks"><span>leonida leaks</span></a><a role="link" href="/leonidaleaks/status/1001"><time datetime="2026-10-30T10:00:00.000Z">2h</time></a></div><button data-testid="caret"></button></div>
-          <div id="plain-replying">Replying to <a role="link" href="/someone">@someone</a></div>
-          <div id="plain-text"><div data-testid="tweetText" lang="en"><span>confirmed: Lucia does NOT survive the final heist </span><img alt="😭" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f62d.svg"></div></div>
-          <div id="plain-bar"><div role="group"><button data-testid="reply"></button><button data-testid="retweet"></button><button data-testid="like"></button><a href="/leonidaleaks/status/1001/analytics">341K</a><button data-testid="bookmark"></button></div></div>
+  <!-- Plain post -->
+  <article id="plain">
+    <div>
+      <div><div data-post-avatar="true"><div></div></div></div>
+      <div id="plain-column">
+        <div>
+          <div id="plain-header">
+            <div><div data-anchor-to-hovered-child=""><div><a href="/leonidaleaks"><div><img alt="leonida leaks" src="https://pbs.twimg.com/profile_images/1/a.jpg"></div></a></div><div><span><a href="/leonidaleaks"><div dir="auto">leonida leaks</div></a></span><span><a href="/leonidaleaks"><span>@leonidaleaks</span></a></span></div></div><span><a href="/leonidaleaks/status/1001">2h</a></span></div>
+            <div><span><button data-slot="xds-button"></button></span><button data-slot="xds-menu-trigger"></button></div>
+          </div>
+          <div id="plain-text" dir="auto" lang="en"><span>confirmed: Lucia does NOT survive the final heist </span><img alt="😭" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f62d.svg"></div>
         </div>
+        <div></div>
+        <div id="plain-bar"><div role="group"><div data-engagement-action="reply"><a href="/compose/post?in_reply_to=1001"><span>12</span></a></div><div data-engagement-action="retweet"><button></button></div><div data-engagement-action="like"><button></button></div><div><a href="/leonidaleaks/status/1001/analytics"><span>341K</span></a></div><div><span data-engagement-action="bookmark"><button></button></span><button data-engagement-action="share"></button></div></div></div>
       </div>
-    </div></div>
+    </div>
   </article>
 
   <!-- Post quoting a post that has photos -->
-  <article id="quote" data-testid="tweet" role="article" tabindex="0">
-    <div><div>
-      <div>
-        <div><div data-testid="Tweet-User-Avatar"></div></div>
-        <div id="quote-column">
-          <div><div data-testid="User-Name"><a role="link" href="/vicecityvibes"><span>not a leaker</span></a><a role="link" href="/vicecityvibes/status/1002"><time datetime="2026-10-30T10:00:00.000Z">1h</time></a></div></div>
-          <div id="quote-text"><div data-testid="tweetText" lang="en"><span>so this is why Brian was acting weird lmao</span></div></div>
-          <div id="quote-box"><div tabindex="0" role="link">
-            <div data-testid="User-Name"><span>datamine dan</span><time datetime="2026-10-30T09:00:00.000Z">3h</time></div>
-            <div data-testid="tweetText" lang="en"><span>datamined dialogue: Brian is the informant</span></div>
-            <div data-testid="tweetPhoto"><img alt="Image" src="https://pbs.twimg.com/media/QQQ?format=jpg&amp;name=120x120"></div>
-            <div data-testid="tweetPhoto"><img alt="Image" src="https://pbs.twimg.com/media/RRR?format=jpg&amp;name=120x120"></div>
-          </div></div>
-          <div><div role="group"><button data-testid="reply"></button><button data-testid="like"></button></div></div>
+  <article id="quote">
+    <div>
+      <div><div data-post-avatar="true"></div></div>
+      <div id="quote-column">
+        <div>
+          <div><div><div data-anchor-to-hovered-child=""><div><span><a href="/vicecityvibes"><div dir="auto">not a leaker</div></a></span></div></div><span><a href="/vicecityvibes/status/1002">1h</a></span></div></div>
+          <div id="quote-text" dir="auto" lang="en"><span>so this is why Brian was acting weird lmao</span></div>
         </div>
+        <div id="quote-box"><div>
+          <div role="link" tabindex="0" data-navigation-stop="" data-href="/dataminedan/status/990" data-slot="embedded-tweet-frame">
+            <a tabindex="-1" href="/dataminedan/status/990"></a>
+            <article><div>
+              <div><div data-anchor-to-hovered-child=""><a href="/dataminedan"><div><img alt="datamine dan" src="https://pbs.twimg.com/profile_images/2/a.jpg"></div></a><div><span><a href="/dataminedan"><div dir="auto">datamine dan</div></a></span></div></div><span><a href="/dataminedan/status/990">3h</a></span></div>
+              <div>
+                <div><a aria-label="Image" data-engagement-action="media" href="/dataminedan/status/990/photo/1"><img alt="" src="https://pbs.twimg.com/media/QQQ?format=jpg&amp;name=small"></a><a aria-label="Image" data-engagement-action="media" href="/dataminedan/status/990/photo/2"><img alt="" src="https://pbs.twimg.com/media/RRR?format=jpg&amp;name=small"></a></div>
+                <div><div dir="auto" lang="en"><span>datamined dialogue: Brian is the informant</span></div></div>
+              </div>
+            </div></article>
+          </div>
+        </div></div>
+        <div><div role="group"><div data-engagement-action="reply"><a href="/compose/post?in_reply_to=1002"></a></div><div data-engagement-action="like"><button></button></div></div></div>
       </div>
-    </div></div>
+    </div>
   </article>
 
-  <!-- Photo post with real alt text -->
-  <article id="photos" data-testid="tweet" role="article" tabindex="0">
-    <div><div>
-      <div>
-        <div><div data-testid="Tweet-User-Avatar"></div></div>
-        <div id="photos-column">
-          <div><div data-testid="User-Name"><a role="link" href="/speedyruns/status/1003"><time datetime="2026-10-30T10:00:00.000Z">5h</time></a></div></div>
-          <div id="photos-text"><div data-testid="tweetText" lang="en"><span>bro the last mission 💀</span></div></div>
-          <div id="photos-media"><div>
-            <div data-testid="tweetPhoto"><img alt="Jason's grave in a Vice City cemetery" src="https://pbs.twimg.com/media/AAA?format=jpg&amp;name=small"></div>
-            <div data-testid="tweetPhoto"><img alt="Image" src="https://pbs.twimg.com/media/BBB?format=jpg&amp;name=small"></div>
-            <div data-testid="tweetPhoto"><img alt="Image" src="https://pbs.twimg.com/media/CCC?format=jpg&amp;name=small"></div>
-          </div></div>
-          <div><div role="group"><button data-testid="reply"></button><button data-testid="like"></button></div></div>
+  <!-- Photo post. The link's aria-label is "Image" on real pages; an author-written one is assumed to go there too. -->
+  <article id="photos">
+    <div>
+      <div><div data-post-avatar="true"></div></div>
+      <div id="photos-column">
+        <div>
+          <div><div><div data-anchor-to-hovered-child=""></div><span><a href="/speedyruns/status/1003">5h</a></span></div></div>
+          <div id="photos-text" dir="auto" lang="en"><span>bro the last mission 💀</span></div>
         </div>
+        <div id="photos-media"><div><div>
+          <div><div data-slot="xds-context-menu-trigger"><a aria-label="Jason's grave in a Vice City cemetery" data-engagement-action="media" href="/speedyruns/status/1003/photo/1"><img alt="" src="https://pbs.twimg.com/media/AAA?format=jpg&amp;name=large"></a></div><div></div></div>
+          <div><div data-slot="xds-context-menu-trigger"><a aria-label="Image" data-engagement-action="media" href="/speedyruns/status/1003/photo/2"><img alt="" src="https://pbs.twimg.com/media/BBB?format=jpg&amp;name=large"></a></div><div></div></div>
+          <div><div data-slot="xds-context-menu-trigger"><a aria-label="Image" data-engagement-action="media" href="/speedyruns/status/1003/photo/3"><img alt="" src="https://pbs.twimg.com/media/CCC?format=jpg&amp;name=large"></a></div><div></div></div>
+        </div></div></div>
+        <div><div role="group"><div data-engagement-action="reply"><a href="/compose/post?in_reply_to=1003"></a></div><div data-engagement-action="like"><button></button></div></div></div>
       </div>
-    </div></div>
+    </div>
   </article>
 
-  <!-- Link card, no text -->
-  <article id="card" data-testid="tweet" role="article" tabindex="0">
-    <div><div>
-      <div>
-        <div><div data-testid="Tweet-User-Avatar"></div></div>
-        <div id="card-column">
-          <div><div data-testid="User-Name"><a role="link" href="/gamingwire/status/1004"><time datetime="2026-10-30T10:00:00.000Z">6h</time></a></div></div>
-          <div id="card-row"><div data-testid="card.wrapper"><div data-testid="card.layoutLarge.media"><a href="https://t.co/xyz" aria-label="gamewire.example Every character who dies in GTA 6"><img alt="" src="https://pbs.twimg.com/card_img/1/a.jpg"></a></div><span>gamewire.example</span><span>Every character who dies in GTA 6</span></div></div>
-          <div><div role="group"><button data-testid="reply"></button><button data-testid="like"></button></div></div>
+  <!-- Link card, no text: the image with the title over it, then the site -->
+  <article id="card">
+    <div>
+      <div><div data-post-avatar="true"></div></div>
+      <div id="card-column">
+        <div>
+          <div><div><div data-anchor-to-hovered-child=""></div><span><a href="/gamingwire/status/1004">6h</a></span></div></div>
         </div>
+        <div id="card-row"><div><div><a href="https://t.co/xyz" target="_blank"><div><img alt="" src="https://pbs.twimg.com/card_img/1/a.jpg"></div><div><div><div dir="auto">Every character who dies in GTA 6</div></div></div></a><a href="https://t.co/xyz" target="_blank"><div dir="auto">gamewire.example</div></a></div></div></div>
+        <div><div role="group"><div data-engagement-action="reply"><a href="/compose/post?in_reply_to=1004"></a></div><div data-engagement-action="like"><button></button></div></div></div>
       </div>
-    </div></div>
+    </div>
   </article>
 
-  <!-- A post page's main post: header above the column, timestamp row before the action bar -->
-  <article id="focal" data-testid="tweet" role="article" tabindex="-1">
-    <div><div>
-      <div></div>
-      <div id="focal-header">
-        <div><div data-testid="Tweet-User-Avatar"></div></div>
-        <div><div data-testid="User-Name"><a role="link" href="/heistwatch"><span>heist watch</span></a></div><button data-testid="caret"></button></div>
+  <!-- A post page's main post: avatar, header, text, media and timestamp in one block, then the
+       action bar and the reply box. Its status link is in the timestamp row. -->
+  <article id="focal">
+    <div id="focal-column">
+      <div>
+        <div id="focal-header"><div><div data-post-avatar="true"></div></div><div><div><div data-anchor-to-hovered-child=""><span><a href="/heistwatch"><div dir="auto">heist watch</div></a></span></div><div><button data-slot="xds-menu-trigger"></button></div></div></div></div>
+        <div id="focal-text" dir="auto" lang="en"><span>the ending cutscene leaked, it's Jason</span></div>
+        <div id="focal-media"><div><div><div data-press-control=""><div><video poster="https://pbs.twimg.com/amplify_video_thumb/1/img/a.jpg"></video><div data-slot="xds-context-menu-trigger"><div><div data-press-control="" role="group"><div role="slider"></div></div></div></div></div></div></div></div></div>
+        <div id="focal-time"><span><a data-status="active" href="/heistwatch/status/1005">8:58 PM · Nov 8, 2026</a></span><span>·</span><a href="/heistwatch/status/1005/analytics"><div>5</div><div>Views</div></a></div>
       </div>
-      <div id="focal-column">
-        <div id="focal-text"><div data-testid="tweetText" lang="en"><span>the ending cutscene leaked, it's Jason</span></div></div>
-        <div id="focal-media"><div><div data-testid="tweetPhoto"><div data-testid="videoPlayer"></div></div></div></div>
-        <div id="focal-time"><a role="link" href="/heistwatch/status/1005"><time datetime="2026-11-08T20:58:00.000Z">8:58 PM · Nov 8, 2026</time></a> · 5 Views</div>
-        <div id="focal-bar"><div role="group"><button data-testid="reply"></button><button data-testid="like"></button></div></div>
+      <div id="focal-bar"><div role="group"><div data-engagement-action="reply"><a href="/compose/post?in_reply_to=1005"></a></div><div data-engagement-action="like"><button></button></div></div></div>
+      <div><div><div></div></div><div data-media-upload-dropzone=""><form><a href="/me"><div><img alt="" src="https://pbs.twimg.com/profile_images/9/a.jpg"></div></a><textarea></textarea></form></div></div>
+    </div>
+  </article>
+
+  <!-- A reply listed under the main post on its page: laid out like a timeline post. It names
+       nothing on its own. -->
+  <article id="reply">
+    <div>
+      <div><div data-post-avatar="true"></div></div>
+      <div id="reply-column">
+        <div>
+          <div><div><div data-anchor-to-hovered-child=""><span><a href="/sadgamer"><div dir="auto">sad gamer</div></a></span></div><span><a href="/sadgamer/status/1006">7m</a></span></div></div>
+          <div id="reply-text" dir="auto" lang="en"><span>can't believe he actually dies</span></div>
+        </div>
         <div></div>
+        <div><div role="group"><div data-engagement-action="reply"><a href="/compose/post?in_reply_to=1006"></a></div><div data-engagement-action="like"><button></button></div></div></div>
       </div>
-    </div></div>
+    </div>
   </article>
 
-  <!-- A reply listed under the main post on its page (2026-11-13): laid out like a timeline
-       post, without a "Replying to" line. It names nothing on its own. -->
-  <article id="reply" data-testid="tweet" role="article" tabindex="0">
-    <div><div>
+  <!-- A repost: an outer article with the "reposted" line around the post's own article -->
+  <article id="repost">
+    <div><span></span><div><a href="/vicecityvibes">not a leaker reposted</a></div></div>
+    <article>
       <div>
-        <div><div data-testid="Tweet-User-Avatar"></div></div>
-        <div id="reply-column">
-          <div><div data-testid="User-Name"><a role="link" href="/sadgamer"><span>sad gamer</span></a><a role="link" href="/sadgamer/status/1006"><time datetime="2026-11-08T21:05:00.000Z">7m</time></a></div></div>
-          <div id="reply-text"><div data-testid="tweetText" lang="en"><span>can't believe he actually dies</span></div></div>
-          <div><div role="group"><button data-testid="reply"></button><button data-testid="like"></button></div></div>
+        <div><div data-post-avatar="true"></div></div>
+        <div id="repost-column">
+          <div>
+            <div><div><div data-anchor-to-hovered-child=""></div><span><a href="/leonidaleaks/status/1007">4h</a></span></div></div>
+            <div id="repost-text" dir="auto" lang="en"><span>the map leak was real</span></div>
+          </div>
+          <div></div>
+          <div><div role="group"><div data-engagement-action="reply"><a href="/compose/post?in_reply_to=1007"></a></div><div data-engagement-action="like"><button></button></div></div></div>
         </div>
       </div>
-    </div></div>
+    </article>
   </article>
 
-  <!-- Ad: no status link around a time -->
-  <article id="ad" data-testid="tweet" role="article" tabindex="0">
-    <div data-testid="User-Name"><a role="link" href="/brand"><span>Brand</span></a><span>Ad</span></div>
-    <div data-testid="tweetText" lang="en"><span>Preorder GTA VI now</span></div>
+  <!-- A translated post: a notice above the text, which has no lang. The author linked another post. -->
+  <article id="translated">
+    <div>
+      <div><div data-post-avatar="true"></div></div>
+      <div id="translated-column">
+        <div>
+          <div><div><div data-anchor-to-hovered-child=""></div><span><a href="/vicenoticias/status/1008">9h</a></span></div></div>
+          <div><div><span></span><span>Translated from Spanish</span><button><span>Show original</span></button></div><button data-slot="xds-button"></button></div>
+          <div id="translated-text" dir="auto"><span>the final mission is set in the Keys, see </span><span><a href="/leonidaleaks/status/1001">x.com/leonidaleaks/status/1001</a></span></div>
+        </div>
+        <div></div>
+        <div><div role="group"><div data-engagement-action="reply"><a href="/compose/post?in_reply_to=1008"></a></div><div data-engagement-action="like"><button></button></div></div></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- No status link: nothing to tell the post by. Ads were like this in the older markup;
+       none has been seen in this one. -->
+  <article id="ad">
+    <div><div><div><a href="/brand"><div dir="auto">Brand</div></a><span>Ad</span></div><div dir="auto" lang="en"><span>Preorder GTA VI now</span></div></div></div>
   </article>
 </body>
 </html>

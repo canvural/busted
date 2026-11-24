@@ -6,14 +6,41 @@ import { MAX_IMAGES_PER_TWEET, pagePostId, xAdapter } from './x';
 const extract = (id: string, includeImages = true) => xAdapter.extract(byId(id), { includeImages });
 const coveredRows = (id: string) => extract(id)?.overlayRows?.().map((row) => row.id);
 
-beforeAll(() => {
-  loadFixture('x');
-  document.body.style.backgroundColor = 'rgb(0, 0, 0)';
-});
+/** Put back an element a test took out, where it was. */
+function removed(el: Element): () => void {
+  const parent = el.parentElement!;
+  const next = el.nextSibling;
+  el.remove();
+  return () => parent.insertBefore(el, next);
+}
 
-describe('xAdapter', () => {
+// X serves two markups. The fixtures hold the same posts under the same ids.
+const markups = [
+  {
+    fixture: 'x',
+    posts: 9,
+    card: 'Every character who dies in GTA 6 gamewire.example',
+    quotedImages: ['https://pbs.twimg.com/media/QQQ?format=jpg&name=small', 'https://pbs.twimg.com/media/RRR?format=jpg&name=small'],
+  },
+  {
+    fixture: 'x-legacy',
+    posts: 7,
+    card: 'gamewire.example Every character who dies in GTA 6',
+    quotedImages: ['https://pbs.twimg.com/media/QQQ?format=jpg&name=120x120', 'https://pbs.twimg.com/media/RRR?format=jpg&name=120x120'],
+  },
+] as const;
+
+describe.each(markups)('xAdapter on $fixture', ({ fixture, posts, card, quotedImages }) => {
+  beforeAll(() => {
+    loadFixture(fixture);
+    document.body.style.backgroundColor = 'rgb(0, 0, 0)';
+  });
+
   it('matches every post', () => {
-    expect(document.querySelectorAll(xAdapter.itemSelector)).toHaveLength(7);
+    const outermost = [...document.querySelectorAll(xAdapter.itemSelector)].filter(
+      (el) => !el.parentElement?.closest(xAdapter.itemSelector),
+    );
+    expect(outermost).toHaveLength(posts);
   });
 
   it('reads a plain post and its id from the status link around <time>', () => {
@@ -43,17 +70,15 @@ describe('xAdapter', () => {
 
     it('re-reads the rows each time, since X re-renders them', () => {
       const rows = extract('photos')!.overlayRows!;
-      const media = byId('photos-media');
-      media.remove();
+      const putBack = removed(byId('photos-media'));
       expect(rows().map((row) => row.id)).toEqual(['photos-text', 'photos-text']);
-      byId('photos-text').after(media);
+      putBack();
     });
 
     it('covers the whole post when there is no action bar to anchor to', () => {
-      const bar = byId('plain-bar');
-      bar.remove();
+      const putBack = removed(byId('plain-bar'));
       const item = extract('plain');
-      byId('plain-text').after(bar);
+      putBack();
       expect(item?.overlayTarget).toBe(byId('plain'));
       expect(item?.overlayRows).toBeUndefined();
     });
@@ -66,10 +91,7 @@ describe('xAdapter', () => {
       text: 'so this is why Brian was acting weird lmao',
       quoted: 'datamined dialogue: Brian is the informant',
     });
-    expect(item?.imageUrls).toEqual([
-      'https://pbs.twimg.com/media/QQQ?format=jpg&name=120x120',
-      'https://pbs.twimg.com/media/RRR?format=jpg&name=120x120',
-    ]);
+    expect(item?.imageUrls).toEqual(quotedImages);
   });
 
   it('keeps real alt text, drops the generic "Image", and caps images per post', () => {
@@ -80,7 +102,7 @@ describe('xAdapter', () => {
   });
 
   it('reads link card text', () => {
-    expect(extract('card')?.fields).toEqual({ card: 'gamewire.example Every character who dies in GTA 6' });
+    expect(extract('card')?.fields).toEqual({ card });
   });
 
   describe('replies', () => {
@@ -118,10 +140,8 @@ describe('xAdapter', () => {
 
     it('still knows the main post after X removed it from the page', () => {
       open('/heistwatch/status/1005');
-      const focal = byId('focal');
-      const next = focal.nextElementSibling!;
       extract('focal');
-      focal.remove();
+      const putBack = removed(byId('focal'));
       // Scrolling through more replies than are remembered must not push it out.
       const later = Array.from({ length: 60 }, (_, i) => {
         const clone = byId('reply').cloneNode(true) as HTMLElement;
@@ -131,7 +151,7 @@ describe('xAdapter', () => {
         clone.remove();
         return item;
       });
-      next.before(focal);
+      putBack();
       expect(later.at(-1)).toMatchObject({ id: 'x:2059:re:1005', fields: { replying_to: "the ending cutscene leaked, it's Jason" } });
     });
 
@@ -153,5 +173,29 @@ describe('xAdapter', () => {
     expect(xAdapter.isDark(document)).toBe(true);
     document.body.style.backgroundColor = 'rgb(255, 255, 255)';
     expect(xAdapter.isDark(document)).toBe(false);
+  });
+});
+
+describe('xAdapter on the current markup only', () => {
+  beforeAll(() => loadFixture('x'));
+
+  it("reads a repost through the article around the post's own", () => {
+    const item = extract('repost');
+    expect(item).toMatchObject({ id: 'x:1007', fields: { text: 'the map leak was real' } });
+    expect(item?.overlayTarget).toBe(byId('repost-column'));
+    expect(coveredRows('repost')).toEqual(['repost-text', 'repost-text']);
+  });
+
+  it('reads translated text, and skips a post link the author wrote when looking for the id', () => {
+    expect(extract('translated')).toMatchObject({
+      id: 'x:1008',
+      fields: { text: 'the final mission is set in the Keys, see x.com/leonidaleaks/status/1001' },
+    });
+    expect(coveredRows('translated')).toEqual(['translated-text', 'translated-text']);
+  });
+
+  it("keeps the quoted post's own link from being taken for the post's", () => {
+    byId('quote').querySelector('a[href="/vicecityvibes/status/1002"]')!.setAttribute('href', '/vicecityvibes');
+    expect(extract('quote')).toBeNull();
   });
 });

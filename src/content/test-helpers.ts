@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { vi } from 'vitest';
 
 /** Replaces the page with one of the synthetic site fixtures. */
-export function loadFixture(site: 'youtube' | 'x' | 'reddit'): void {
+export function loadFixture(site: 'youtube' | 'x' | 'x-legacy' | 'reddit'): void {
   document.documentElement.innerHTML = readFileSync(join(import.meta.dirname, `fixtures/${site}.html`), 'utf8');
 }
 

@@ -1,5 +1,32 @@
 /**
- * X page structure (checked against a signed-in x.com timeline on 2026-10-30):
+ * X serves two markups. Posts are told apart by `data-testid="tweet"`, which only the
+ * older one has. Both are read, because the newer one may not have reached everyone.
+ *
+ * Current markup (checked against a signed-in x.com timeline and two post pages on
+ * 2026-11-24). It has no `data-testid` and no `<time>`:
+ * - Each post is a bare `<article>`. A repost is an outer `<article>` holding a
+ *   "X reposted" line and the post's own `<article>`.
+ * - The post's own link is an `a[href="/<user>/status/ID"]`, in the header on timelines
+ *   and in the timestamp row of a post page's main post.
+ * - Text is a `div[dir="auto"]` outside the header and outside links. It has `lang`
+ *   unless X translated it. Names and card titles are `div[dir="auto"]` too, but sit in
+ *   the header or in a link.
+ * - A quoted post is `[data-slot="embedded-tweet-frame"]` holding a link to the quoted
+ *   post and a nested `<article>`.
+ * - Photos are `a[data-engagement-action="media"] img` from pbs.twimg.com/media. The alt
+ *   text is the link's `aria-label`, "Image" when the author wrote none.
+ * - A link card is two links side by side under one parent: image (from
+ *   pbs.twimg.com/card_img) with the title, then the site.
+ * - The action bar is the `[role="group"]` around `[data-engagement-action="reply"]`.
+ *   A video player holds a `[role="group"]` of its own.
+ * - Timeline and replies: the avatar is in a sibling column. The content column's rows
+ *   are a block with the header, notices ("Translated from…") and the text, then a media
+ *   slot (photos, video, card, quoted post; empty when there are none), then the action bar.
+ * - A post page's main post: one block with the header, text, media slot and timestamp
+ *   row, followed by the action bar and the reply box.
+ * - Not seen yet: ads, and photos with author-written alt text.
+ *
+ * Older markup (checked against a signed-in x.com timeline on 2026-10-30):
  * - Each post is `article[data-testid="tweet"]`.
  * - The post's own link is the `a[href*="/status/ID"]` that wraps its `<time>`. A quoted
  *   post also has a `<time>`, but not inside a status link.
@@ -9,8 +36,8 @@
  *   usually just "Image" unless the author wrote one.
  * - Link previews are `[data-testid="card.wrapper"]`; their text is the site and title.
  *
- * Layout (checked on x.com timelines and post pages on 2026-11-08), used to blur only the
- * post's content:
+ * Older layout (checked on x.com timelines and post pages on 2026-11-08), used to blur
+ * only the post's content:
  * - The action bar (reply, repost, like…) is a `[role="group"]` nested inside the last
  *   row of a column. That column also holds the content rows: text, media, quoted post, card.
  * - Timeline: the avatar is in a sibling column. The content column's rows are the name
@@ -18,7 +45,8 @@
  * - A post page's main post has its header above the column, and a timestamp/views row
  *   between the content and the action bar.
  *
- * Replies (checked on one signed-in post page with 261 replies on 2026-11-13):
+ * Replies (checked on one signed-in post page with 261 replies on 2026-11-13; the current
+ * markup lists them the same way):
  * - A post page's URL is `/<user>/status/<ID>`, and its main post is the article whose
  *   status link carries that ID.
  * - Post IDs grow over time, so on that page a post with a larger ID was written after
@@ -55,44 +83,161 @@ export function readableText(root: Element | null | undefined, separator = ''): 
   return parts.join(separator);
 }
 
-const ITEM_SELECTOR = 'article[data-testid="tweet"]';
+/** Every post, in either markup. A quoted post's nested article is skipped by the scanner. */
+const ITEM_SELECTOR = 'article';
 
-function statusId(article: HTMLElement): string | null {
-  for (const link of article.querySelectorAll<HTMLAnchorElement>('a[href*="/status/"]')) {
-    if (!link.querySelector('time')) continue;
-    const match = /\/status\/(\d+)/.exec(link.getAttribute('href') ?? '');
-    if (match?.[1]) return match[1];
-  }
-  return null;
+interface PostContent {
+  text: string;
+  quoted: string;
+  card: string;
+  /** Every photo, the quoted post's included. `alt` is empty when the author wrote none. */
+  photos: { src: string; alt: string }[];
 }
 
+/** Where to draw the overlay: over `rows()` inside `column`. */
+interface PostLayout {
+  column: HTMLElement;
+  /** The first and last content rows. The header, timestamp and action bar stay outside. */
+  rows: () => Element[];
+}
+
+/** How one of X's markups is read. */
+interface Markup {
+  statusId(article: HTMLElement): string | null;
+  readContent(article: HTMLElement): PostContent;
+  /** Null when the post doesn't look as expected. */
+  layout(article: HTMLElement): PostLayout | null;
+}
+
+const realAlt = (alt: string | null | undefined) => {
+  const text = clean(alt);
+  return text === 'Image' ? '' : text;
+};
+
+const LEGACY_TEXT = '[data-testid="tweetText"]';
+
 /** Rows that carry what the post says or shows. A quoted post is a `div[role="link"]`. */
-const CONTENT = [
-  '[data-testid="tweetText"]',
+const LEGACY_CONTENT = [
+  LEGACY_TEXT,
   '[data-testid="tweetPhoto"]',
   '[data-testid="videoPlayer"]',
   '[data-testid="card.wrapper"]',
   'div[role="link"]',
 ].join(', ');
 
-const isContent = (el: Element) => el.matches(CONTENT) || el.querySelector(CONTENT) !== null;
+const isLegacyContent = (el: Element) => el.matches(LEGACY_CONTENT) || el.querySelector(LEGACY_CONTENT) !== null;
 
-/** The column holding the post's content and action bar, or null when the post doesn't look as expected. */
-export function contentColumn(article: HTMLElement): HTMLElement | null {
-  const bar = article.querySelector('[role="group"]');
-  let column = article.querySelector(CONTENT)?.parentElement ?? null;
-  if (!bar) return null;
-  while (column && column !== article && !column.contains(bar)) column = column.parentElement;
-  return column && column !== article ? column : null;
+const legacy: Markup = {
+  statusId(article) {
+    for (const link of article.querySelectorAll('a[href*="/status/"]')) {
+      if (!link.querySelector('time')) continue;
+      const match = /\/status\/(\d+)/.exec(link.getAttribute('href') ?? '');
+      if (match?.[1]) return match[1];
+    }
+    return null;
+  },
+
+  readContent(article) {
+    const quoteBox = [...article.querySelectorAll('div[role="link"]')].find((el) => el.querySelector(LEGACY_TEXT));
+    const inQuote = (el: Element) => quoteBox?.contains(el) ?? false;
+    const texts = [...article.querySelectorAll(LEGACY_TEXT)];
+    return {
+      text: clean(readableText(texts.find((t) => !inQuote(t)))),
+      quoted: clean(readableText(texts.find(inQuote))),
+      card: clean(readableText(article.querySelector('[data-testid="card.wrapper"]'), ' ')),
+      photos: [...article.querySelectorAll<HTMLImageElement>('[data-testid="tweetPhoto"] img')].map((img) => ({
+        src: img.src,
+        alt: realAlt(img.alt),
+      })),
+    };
+  },
+
+  layout(article) {
+    const bar = article.querySelector('[role="group"]');
+    let column = article.querySelector(LEGACY_CONTENT)?.parentElement ?? null;
+    if (!bar) return null;
+    while (column && column !== article && !column.contains(bar)) column = column.parentElement;
+    if (!column || column === article) return null;
+    const rows = () => {
+      const content = [...column.children].filter(isLegacyContent);
+      return content.length > 0 ? [content[0]!, content.at(-1)!] : [];
+    };
+    return { column, rows };
+  },
+};
+
+const QUOTE = '[data-slot="embedded-tweet-frame"]';
+const HEADER = '[data-anchor-to-hovered-child]';
+const TEXT = 'div[dir="auto"]';
+const PHOTO_LINK = 'a[data-engagement-action="media"]';
+
+/** Matches of `selector` that belong to the post itself, not to the post it quotes. */
+const ownMatches = (article: Element, selector: string) =>
+  [...article.querySelectorAll<HTMLElement>(selector)].filter((el) => !el.parentElement?.closest(QUOTE));
+
+/** Text blocks under `root`. Names and card titles look the same, but sit in the header or in a link. */
+const textsIn = (root: Element) =>
+  [...root.querySelectorAll<HTMLElement>(TEXT)].filter((el) => !el.closest(`a, ${HEADER}`));
+
+const ownTexts = (article: Element) => textsIn(article).filter((el) => !el.closest(QUOTE));
+
+const actionBar = (article: Element) => ownMatches(article, '[data-engagement-action="reply"]')[0]?.closest('[role="group"]') ?? null;
+
+/** Something the post shows: a photo, video, card image or quoted post. */
+function firstMedia(article: Element): HTMLElement | null {
+  const chrome = `${HEADER}, ${TEXT}, [data-post-avatar], [role="group"]`;
+  return (
+    ownMatches(article, `${QUOTE}, video, img`).find(
+      (el) => !el.closest(chrome) && !(el as HTMLImageElement).src?.includes('/profile_images/'),
+    ) ?? null
+  );
 }
 
-/** The first and last content rows in `column`. The header, timestamp and action bar stay outside. */
-export function contentRows(column: Element): Element[] {
-  const rows = [...column.children].filter(isContent);
-  const first = rows[0];
-  const last = rows.at(-1);
-  return first && last ? [first, last] : [];
-}
+const current: Markup = {
+  statusId(article) {
+    for (const link of ownMatches(article, 'a[href*="/status/"]')) {
+      if (link.closest(TEXT)) continue; // a link the author wrote
+      const match = /^\/[^/]+\/status\/(\d+)$/.exec(link.getAttribute('href') ?? '');
+      if (match?.[1]) return match[1];
+    }
+    return null;
+  },
+
+  readContent(article) {
+    const quote = article.querySelector(QUOTE);
+    const cardImage = ownMatches(article, 'img[src*="/card_img/"]')[0];
+    return {
+      text: clean(readableText(ownTexts(article)[0])),
+      quoted: clean(readableText(quote && textsIn(quote)[0])),
+      card: clean(readableText(cardImage?.closest('a')?.parentElement, ' ')),
+      photos: [...article.querySelectorAll<HTMLImageElement>(`${PHOTO_LINK} img`)].map((img) => ({
+        src: img.src,
+        alt: realAlt(img.alt) || realAlt(img.closest(PHOTO_LINK)?.getAttribute('aria-label')),
+      })),
+    };
+  },
+
+  layout(article) {
+    const bar = actionBar(article);
+    const column = bar?.parentElement?.parentElement;
+    if (!bar || !column || column === article) return null;
+    const rows = () => {
+      const text = ownTexts(article)[0];
+      // The media slot: as far up from the media as leaves the text, avatar and action bar out.
+      let media = firstMedia(article);
+      for (let up = media?.parentElement; up && !up.contains(bar); up = up.parentElement) {
+        if ((text && up.contains(text)) || up.querySelector('[data-post-avatar]')) break;
+        media = up;
+      }
+      const first = text ?? media;
+      const last = media ?? text;
+      return first && last ? [first, last] : [];
+    };
+    return { column, rows };
+  },
+};
+
+const markupOf = (article: HTMLElement): Markup => (article.matches('[data-testid="tweet"]') ? legacy : current);
 
 /**
  * The ID of the post a post page is about, from `/<user>/status/<ID>`. Null on other
@@ -103,33 +248,11 @@ export function pagePostId(pathname: string): string | null {
   return /^\/[^/]+\/status\/(\d+)\/?$/.exec(pathname)?.[1] ?? null;
 }
 
-interface PostContent {
-  text: string;
-  quoted: string;
-  card: string;
-  alt: string[];
-  photos: HTMLImageElement[];
-}
-
-function readContent(article: HTMLElement): PostContent {
-  const quoteBox = [...article.querySelectorAll<HTMLElement>('div[role="link"]')].find((el) =>
-    el.querySelector('[data-testid="tweetText"]'),
-  );
-  const inQuote = (el: Element) => quoteBox?.contains(el) ?? false;
-
-  const texts = [...article.querySelectorAll('[data-testid="tweetText"]')];
-  const photos = [...article.querySelectorAll<HTMLImageElement>('[data-testid="tweetPhoto"] img')];
-  return {
-    text: clean(readableText(texts.find((t) => !inQuote(t)))),
-    quoted: clean(readableText(texts.find(inQuote))),
-    card: clean(readableText(article.querySelector('[data-testid="card.wrapper"]'), ' ')),
-    alt: photos.map((img) => clean(img.alt)).filter((a) => a && a !== 'Image'),
-    photos,
-  };
-}
-
 /** A post's words on one line, for use as the context of its replies. */
-const summary = ({ text, quoted, card, alt }: PostContent) => clean([text, quoted, card, ...alt].filter(Boolean).join(' · '));
+const altTexts = (content: PostContent) => content.photos.map((photo) => photo.alt).filter(Boolean);
+
+const summary = (content: PostContent) =>
+  clean([content.text, content.quoted, content.card, ...altTexts(content)].filter(Boolean).join(' · '));
 
 /**
  * What the main posts of recently opened post pages say, by post ID, for when X has
@@ -153,7 +276,8 @@ function repliedTo(article: HTMLElement, id: string, content: PostContent): { id
   if (!mainId || BigInt(id) <= BigInt(mainId)) return null;
   if (!remembered.has(mainId)) {
     for (const other of document.querySelectorAll<HTMLElement>(ITEM_SELECTOR)) {
-      if (statusId(other) === mainId) remember(mainId, readContent(other));
+      const markup = markupOf(other);
+      if (markup.statusId(other) === mainId) remember(mainId, markup.readContent(other));
     }
   }
   const text = remembered.get(mainId);
@@ -172,25 +296,26 @@ export const xAdapter: SiteAdapter = {
   itemSelector: ITEM_SELECTOR,
 
   extract(article, { includeImages }) {
-    const id = statusId(article);
+    const markup = markupOf(article);
+    const id = markup.statusId(article);
     if (!id) return null; // ads and placeholders have no status link
 
-    const content = readContent(article);
-    const { text, quoted, card, alt, photos } = content;
+    const content = markup.readContent(article);
+    const { text, quoted, card, photos } = content;
     const imageUrls = includeImages
       ? photos
-          .map((img) => img.src)
+          .map((photo) => photo.src)
           .filter((src) => src.startsWith('https://pbs.twimg.com/'))
           .slice(0, MAX_IMAGES_PER_TWEET)
       : [];
 
     const parent = repliedTo(article, id, content);
-    const own = compactFields({ text, quoted, card, alt });
+    const own = compactFields({ text, quoted, card, alt: altTexts(content) });
     if (Object.keys(own).length === 0 && imageUrls.length === 0) return null;
     const fields = parent ? { ...own, [REPLY_CONTEXT_FIELD]: parent.text } : own;
 
     const imageCount = photos.length;
-    const column = contentColumn(article);
+    const layout = markup.layout(article);
     const item: ExtractedItem = {
       // A verdict reached with the main post as context is kept apart from one reached
       // without it (the same reply on a timeline), so neither is reused for the other.
@@ -199,9 +324,9 @@ export const xAdapter: SiteAdapter = {
       fields,
       // Cover just the content so the author, date and stats stay visible. When the
       // layout isn't recognized, cover the whole post rather than risk showing a spoiler.
-      overlayTarget: column ?? article,
+      overlayTarget: layout?.column ?? article,
     };
-    if (column) item.overlayRows = () => contentRows(column);
+    if (layout) item.overlayRows = layout.rows;
     if (imageUrls.length > 0) item.imageUrls = imageUrls;
     return item;
   },
